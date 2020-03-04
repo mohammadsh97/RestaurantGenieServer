@@ -3,9 +3,8 @@ package com.mohammadsharabati.restaurantgenieserver.ViewHolder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.MohammadSharabati.restaurantgenie.Interface.ItemClickListener;
-import com.MohammadSharabati.restaurantgenie.R;
+import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
+import com.mohammadsharabati.restaurantgenieserver.R;
 
 import androidx.recyclerview.widget.RecyclerView;
 

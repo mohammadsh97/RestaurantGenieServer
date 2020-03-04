@@ -2,20 +2,18 @@ package com.mohammadsharabati.restaurantgenieserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.common.internal.service.Common;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -54,9 +52,9 @@ public class SignIn extends AppCompatActivity {
                         if (dataSnapshot.child(edtBusinessNumber.getText().toString()).exists()) {
                             // Get user information
                             mDialog.dismiss();
-                            User user = dataSnapshot.child(edtBusinessNumber.getText().toString()).child("Worker").child("Table").getValue(User.class);
+                            User user = dataSnapshot.child(edtBusinessNumber.getText().toString()).child("Worker").child("Manger").getValue(User.class);
                             user.setBusinessNumber(edtBusinessNumber.getText().toString());
-                            if (user.getPassword().equals(edtPassword.getText().toString())) {
+                            if (user.getName().equals(edtName.getText().toString()) && user.getPassword().equals(edtPassword.getText().toString())) {
                                 {
                                     Intent homeIntent = new Intent(SignIn.this, Home.class);
                                     Common.currentUser = user;

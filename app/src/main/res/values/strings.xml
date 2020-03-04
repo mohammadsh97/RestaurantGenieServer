@@ -36,4 +36,6 @@
     <string name="description">Description</string>
     <string name="show_comment">Show Comment</string>
     <string name="todo">TODO</string>
+    <string name="SELECT">SELECT</string>
+    <string name="UPLOAD">UPLOAD</string>
 </resources>

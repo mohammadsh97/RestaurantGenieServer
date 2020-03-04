@@ -19,4 +19,6 @@
         android:paddingTop="16dp"
         android:text="@string/mohammad"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+
 </LinearLayout>
