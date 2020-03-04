@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">RestaurantGenie</string>
+    <string name="SignIn">Sign In</string>
+    <string name="SignUp">Sign Up</string>
+    <string name="PhoneNumber">Phone Number</string>
+    <string name="Name">Name</string>
+    <string name="Password">Password</string>
+    <string name="title_activity_home">Home</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="menu">Menu</string>
+    <string name="cart">Cart</string>
+    <string name="name_of_menu">Name Of Menu</string>
+    <string name="mohammad">Mohammad</string>
+    <string name="_0504738958">0504738958</string>
+    <string name="walid">walid</string>
+    <string name="_1234">1234</string>
+    <string name="_05550505">05550505</string>
+    <string name="mohammad_sharabati">Mohammad Sharabati</string>
+    <string name="orders">Orders</string>
+    <string name="sign_out">Sign out</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="user_name">User name</string>
+    <string name="food_name">Food Name</string>
+    <string name="_1000">1000</string>
+    <string name="description">Description</string>
+    <string name="show_comment">Show Comment</string>
+    <string name="todo">TODO</string>
+</resources>
