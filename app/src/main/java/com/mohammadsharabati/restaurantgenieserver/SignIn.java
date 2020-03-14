@@ -21,7 +21,8 @@ public class SignIn extends AppCompatActivity {
 
     private MaterialEditText edtBusinessNumber, edtName, edtPassword;
     private Button btnSignIn;
-
+    FirebaseDatabase db;
+    DatabaseReference users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,47 +35,70 @@ public class SignIn extends AppCompatActivity {
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
 
         //Int Firebase
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference table_user = database.getReference("RestaurantGenie");
+        db = FirebaseDatabase.getInstance();
+        users = db.getReference("RestaurantGenie");
 
+
+        // sign in
+        onClickSignIn();
+    }
+
+    /**
+     * Clicking sign in button
+     */
+    private void onClickSignIn() {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                signInUser(edtBusinessNumber.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
+            }
+        });
+    }
 
-                final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
-                mDialog.setMessage("Please waiting...");
-                mDialog.show();
+    /**
+     * Sign in to app
+     */
+    private void signInUser(final String BusinessNumber, final String Name, final String password) {
+        final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
+        mDialog.setMessage("Please waiting...");
+        mDialog.show();
 
-                table_user.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //Chech if user not exist in databases
-                        if (dataSnapshot.child(edtBusinessNumber.getText().toString()).exists()) {
-                            // Get user information
-                            mDialog.dismiss();
-                            User user = dataSnapshot.child(edtBusinessNumber.getText().toString()).child("Worker").child("Manger").getValue(User.class);
-                            user.setBusinessNumber(edtBusinessNumber.getText().toString());
-                            if (user.getName().equals(edtName.getText().toString()) && user.getPassword().equals(edtPassword.getText().toString())) {
-                                {
-                                    Intent homeIntent = new Intent(SignIn.this, Home.class);
-                                    Common.currentUser = user;
-                                    startActivity(homeIntent);
-                                    finish();
-                                    table_user.removeEventListener(this);
-                                }
-                            } else
-                                Toast.makeText(SignIn.this, "Wrong Password !!!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            mDialog.dismiss();
-                            Toast.makeText(SignIn.this, "User not exist in Database", Toast.LENGTH_SHORT).show();
-                        }
+        users.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Chech if user not exist in databases
+                if (dataSnapshot.child(BusinessNumber).exists()) {
+                    // Get user information
+                    mDialog.dismiss();
+                    User userManger = dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getValue(User.class);
+                    User userWorker = dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getValue(User.class);
+                    userManger.setBusinessNumber(BusinessNumber);
+                    userWorker.setBusinessNumber(BusinessNumber);
+
+                    // check password
+                    if (userWorker.getName().equals(Name) && userWorker.getPassword().equals(password)) {
+                        // Login ok
+
+                        Toast.makeText(SignIn.this, "Im Staff!", Toast.LENGTH_SHORT).show();
+
+                    } else if (userManger.getName().equals(Name) && userManger.getPassword().equals(password)) {
+                        Intent HomeIntent = new Intent(SignIn.this, Home.class);
+                        Common.currentUser = userManger;
+                        startActivity(HomeIntent);
+                        finish();
+                    } else {
+                        Toast.makeText(SignIn.this, "Wrong !!!", Toast.LENGTH_SHORT).show();
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                } else {
+                    mDialog.dismiss();
+                    Toast.makeText(SignIn.this, "Restaurant not exist in Database", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

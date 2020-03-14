@@ -1,8 +1,7 @@
 package com.mohammadsharabati.restaurantgenieserver.Model;
 
 public class Category {
-    private String Name ;
-    private String Image ;
+    private String Name , Image ;
 
     public Category() {
     }

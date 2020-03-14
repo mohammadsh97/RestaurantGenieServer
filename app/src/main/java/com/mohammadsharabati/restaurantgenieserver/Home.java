@@ -5,13 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,8 +19,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -39,12 +41,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
-
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.UUID;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -53,7 +53,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     DatabaseReference categories;
     TextView txtFullName;
     RecyclerView recycler_menu;
-    RecyclerView.LayoutManager layoutManager;
+    RecyclerView.LayoutManager mLayoutManager;
     FirebaseRecyclerOptions<Category> options;
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
     FirebaseStorage storage;
@@ -77,6 +77,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu Management");
         setSupportActionBar(toolbar);
@@ -113,11 +114,25 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         //load menu
         recycler_menu = (RecyclerView) findViewById(R.id.recycler_menu);
         recycler_menu.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recycler_menu.setLayoutManager(layoutManager);
+        mLayoutManager = new LinearLayoutManager(this);
+        recycler_menu.setLayoutManager(mLayoutManager);
         loadMenu();
 
+//        updateToken(FirebaseInstanceId.getInstance().getToken());
+
     }
+
+//    private void updateToken(String token) {
+//        FirebaseDatabase db = FirebaseDatabase.getInstance();
+//        DatabaseReference tokens = db.getReference("Tokens");
+//        Token data = new Token(token, true); // false because this token send from Client app
+//        tokens.child(Common.currentUser.getPhone()).setValue(data);
+//
+//    }
+
+    /**
+     * Adding new category
+     */
 
     private void showDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
@@ -223,9 +238,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     /**
      * Get result from choose image. Press Ctrl + O to open this function
-     * @param requestCode
-     * @param resultCode
-     * @param data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -255,20 +267,17 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull Category model) {
+            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull final Category model) {
                 Picasso.with(getBaseContext())
                         .load(model.getImage())
                         .into(holder.imageView);
-                final Category clickItem = model;
                 holder.txtMenuName.setText(model.getName());
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        //Get CategoryId and send to new Activity
+                        // send categoryId and start new activity
                         Intent foodList = new Intent(Home.this, FoodList.class);
-                        //Because CategoryId is key, so we just get key of this item
                         foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
-                        Log.d("CategoryId", adapter.getRef(position).getKey());
                         startActivity(foodList);
                     }
                 });
@@ -281,20 +290,21 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 return new MenuViewHolder(view);
             }
         };
-
         adapter.startListening();
+        adapter.notifyDataSetChanged(); // Refresh data if have data changed
         recycler_menu.setAdapter(adapter);
-
     }
 
-//    @Override
-//    protected void onPostResume() {
-//        super.onPostResume();
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null)
+            adapter.stopListening();
+    }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -314,33 +324,180 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("statmentWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_menu) {
-
-        } else if (id == R.id.nav_cart) {
-            Intent cartIntent = new Intent(Home.this, Cart.class);
-            startActivity(cartIntent);
-
-        } else if (id == R.id.nav_orders) {
-            Intent orderIntent = new Intent(Home.this, OrderStatus.class);
-            startActivity(orderIntent);
-
-        } else if (id == R.id.nav_sign_out) {
-            //Logout
-            Intent signIn = new Intent(Home.this, MainActivity.class);
-            signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(signIn);
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    /**
+     * Update/Delete category item on context menu
+     */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        if(item.getTitle().equals(Common.UPDATE)) {
+            showUpdateDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
+        } else if(item.getTitle().equals(Common.DELETE)) {
+            deleteCategory(adapter.getRef(item.getOrder()).getKey());
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    /**
+     * Delete category item
+     */
+    private void deleteCategory(String key) {
+        //First, we need get all food in category
+        DatabaseReference foods = database.getReference("Foods");
+        Query foodInCategory = foods.orderByChild("menuId").equalTo(key);
+        foodInCategory.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
+                    postSnapShot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        categories.child(key).removeValue();
+    }
+
+    /**
+     * Update category item
+     */
+    private void showUpdateDialog(final String key, final Category item) {
+        // set title and message
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
+        alertDialog.setTitle("Update Category");
+        alertDialog.setMessage("Please fill full information");
+
+        // inflating layout
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_menu_layout = inflater.inflate(R.layout.add_new_menu_layout, null);
+
+        edtName = add_menu_layout.findViewById(R.id.edtName);
+        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
+        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
+
+        // set layout and icon for dialog
+        alertDialog.setView(add_menu_layout);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+
+        // set default name
+        edtName.setText(item.getName());
+
+        // event for button
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeImage(item);
+            }
+        });
+
+        // set button
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+
+                // Update information on Firebase
+                item.setName(edtName.getText().toString());
+                categories.child(key).setValue(item);
+            }
+        });
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+    /**
+     * Changing image for update category item
+     */
+    private void changeImage(final Category item) {
+        if (saveUri != null) {
+            final ProgressDialog mDialog = new ProgressDialog(this);
+            mDialog.setMessage("Uploading...");
+            mDialog.show();
+
+            // set image name
+            String imageName = UUID.randomUUID().toString();
+            // set folder
+            final StorageReference imageFolder = storageReference.child("images/" + imageName);
+            // uploading image to folder
+            imageFolder.putFile(saveUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            mDialog.dismiss();
+                            Toast.makeText(Home.this, "Uploaded!!!", Toast.LENGTH_SHORT).show();
+                            // set value for new Category if image uploaded
+                            // and we can get download link 'uri'
+                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    item.setImage(uri.toString());
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            mDialog.dismiss();
+                            Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            // don't worry about this error
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() /
+                                    taskSnapshot.getTotalByteCount());
+                            mDialog.setMessage("Upload is " + progress + "% done");
+                        }
+                    });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
+    }
+
+
 }

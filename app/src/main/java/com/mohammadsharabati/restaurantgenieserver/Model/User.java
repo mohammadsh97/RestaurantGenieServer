@@ -2,12 +2,7 @@ package com.mohammadsharabati.restaurantgenieserver.Model;
 
 public class User {
 
-    private String businessNumber;
-    private String email;
-    private String Phone ;
-    private String Name ;
-    private String Password ;
-
+    private String businessNumber, email, Phone, Name, Password;
 
     public User() {
     }
@@ -40,6 +35,7 @@ public class User {
         return Password;
     }
 
+
     public void setBusinessNumber(String businessNumber) {
         this.businessNumber = businessNumber;
     }
@@ -59,4 +55,5 @@ public class User {
     public void setPassword(String password) {
         Password = password;
     }
+
 }
