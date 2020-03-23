@@ -23,6 +23,8 @@ public class SignIn extends AppCompatActivity {
     private Button btnSignIn;
     FirebaseDatabase db;
     DatabaseReference users;
+    public User userManger;
+    public User userWorker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,10 @@ public class SignIn extends AppCompatActivity {
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signInUser(edtBusinessNumber.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
+                if (edtBusinessNumber.getText().toString().trim().length() != 0)
+                        signInUser(edtBusinessNumber.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
+                else
+                    Toast.makeText(SignIn.this, "Complete the blank sentences!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -70,12 +75,12 @@ public class SignIn extends AppCompatActivity {
                 if (dataSnapshot.child(BusinessNumber).exists()) {
                     // Get user information
                     mDialog.dismiss();
-                    User userManger = dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getValue(User.class);
-                    User userWorker = dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getValue(User.class);
+                    userManger = dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getValue(User.class);
+                    userWorker = dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getValue(User.class);
                     userManger.setBusinessNumber(BusinessNumber);
                     userWorker.setBusinessNumber(BusinessNumber);
 
-                    // check password
+                    // check Name and password
                     if (userWorker.getName().equals(Name) && userWorker.getPassword().equals(password)) {
                         // Login ok
 

@@ -49,15 +49,15 @@ import java.util.UUID;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    FirebaseDatabase database;
-    DatabaseReference categories;
-    TextView txtFullName;
-    RecyclerView recycler_menu;
-    RecyclerView.LayoutManager mLayoutManager;
-    FirebaseRecyclerOptions<Category> options;
-    FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
-    FirebaseStorage storage;
-    StorageReference storageReference;
+    private FirebaseDatabase database;
+    private DatabaseReference categories;
+    private TextView txtFullName;
+    private RecyclerView recycler_menu;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private FirebaseRecyclerOptions<Category> options;
+    private FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
 
     //Add New Menu layout
     MaterialEditText edtName;
@@ -84,7 +84,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         //Init firebase
         database = FirebaseDatabase.getInstance();
-        categories = database.getReference().child("Category");
+        categories = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Category");
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
@@ -339,6 +339,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        if (id == R.id.time_table) {
+            Intent timeTableIntent = new Intent(Home.this, TimeTable.class);
+            startActivity(timeTableIntent);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

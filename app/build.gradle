@@ -78,5 +78,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
     implementation 'androidx.navigation:navigation-fragment:2.2.1'
     implementation 'androidx.navigation:navigation-ui:2.2.1'
+    //Android Paging Libray
+    implementation 'android.arch.paging:runtime:1.x.x'
+
+    //Firebase Pagination Library
+    implementation 'com.shreyaspatil:FirebaseRecyclerPagination:1.0.1'
 }
 apply plugin: 'com.google.gms.google-services'
