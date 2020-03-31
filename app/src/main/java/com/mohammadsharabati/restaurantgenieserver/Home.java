@@ -118,6 +118,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         recycler_menu.setLayoutManager(mLayoutManager);
         loadMenu();
 
+
+
 //        updateToken(FirebaseInstanceId.getInstance().getToken());
 
     }
@@ -236,9 +238,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
     }
 
-    /**
-     * Get result from choose image. Press Ctrl + O to open this function
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -343,6 +342,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         if (id == R.id.time_table) {
             Intent timeTableIntent = new Intent(Home.this, TimeTable.class);
             startActivity(timeTableIntent);
+        } else if (id == R.id.nav_orders) {
+            Intent orderIntent = new Intent(Home.this, OrderStatus.class);
+            startActivity(orderIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

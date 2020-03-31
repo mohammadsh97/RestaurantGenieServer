@@ -38,10 +38,10 @@ public class TimeWorker {
         this.endTime = endTime;
     }
 
-    public int getLength() {
-        if (Integer.parseInt(endTime) != 0 && Integer.parseInt(startTime) != 0)
-            return Integer.parseInt(endTime) - Integer.parseInt(startTime);
-
-        return 0;
-    }
+//    public int getLength() {
+//        if (Integer.parseInt(endTime) != 0 && Integer.parseInt(startTime) != 0)
+//            return Integer.parseInt(endTime) - Integer.parseInt(startTime);
+//
+//        return 0;
+//    }
 }

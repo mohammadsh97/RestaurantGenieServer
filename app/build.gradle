@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -52,6 +56,7 @@ dependencies {
 //    implementation 'com.google.android.gms:play-services:12.0.1'
 
     //Add Library
+    implementation 'com.jaredrummler:material-spinner:1.2.4'
     implementation 'com.github.andremion:counterfab:1.0.1'
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
