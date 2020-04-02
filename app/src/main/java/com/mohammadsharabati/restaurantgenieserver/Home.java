@@ -41,6 +41,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
+import io.paperdb.Paper;
+
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -81,6 +83,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu Management");
         setSupportActionBar(toolbar);
+
+        Paper.init(this);
 
         //Init firebase
         database = FirebaseDatabase.getInstance();
@@ -345,6 +349,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.nav_orders) {
             Intent orderIntent = new Intent(Home.this, OrderStatus.class);
             startActivity(orderIntent);
+        } else if (id == R.id.nav_sign_out) {
+            //Delete Remember user
+            Paper.book().destroy();
+
+            //Logout
+            Intent signIn = new Intent(Home.this, MainActivity.class);
+            signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(signIn);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -2,6 +2,8 @@ package com.mohammadsharabati.restaurantgenieserver;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import io.paperdb.Paper;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.widget.CheckBox;
 
 public class SignIn extends AppCompatActivity {
 
@@ -25,6 +28,8 @@ public class SignIn extends AppCompatActivity {
     DatabaseReference users;
     public User userManger;
     public User userWorker;
+    CheckBox ckbRemember;
+//    TextView txtForgotPwd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,10 @@ public class SignIn extends AppCompatActivity {
         edtName = (MaterialEditText) findViewById(R.id.edtName);
         edtPassword = (MaterialEditText) findViewById(R.id.edtPassword);
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
+        ckbRemember =(CheckBox)findViewById(R.id.ckbRemember);
+//        txtForgotPwd =(TextView) findViewById(R.id.txtForgotPwd);
+
+        Paper.init(this);
 
         //Int Firebase
         db = FirebaseDatabase.getInstance();
@@ -49,13 +58,22 @@ public class SignIn extends AppCompatActivity {
      * Clicking sign in button
      */
     private void onClickSignIn() {
+
+        Paper.init(this);
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (edtBusinessNumber.getText().toString().trim().length() != 0)
+                if (Common.isConnectedToInternet(getBaseContext())) {
+
+                    if (edtBusinessNumber.getText().toString().trim().length() != 0)
                         signInUser(edtBusinessNumber.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
-                else
-                    Toast.makeText(SignIn.this, "Complete the blank sentences!", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(SignIn.this, "Complete the blank sentences!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(SignIn.this, "Please check your network connection", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         });
     }
@@ -84,14 +102,36 @@ public class SignIn extends AppCompatActivity {
                     if (userWorker.getName().equals(Name) && userWorker.getPassword().equals(password)) {
                         // Login ok
 
-                        Toast.makeText(SignIn.this, "Im Staff!", Toast.LENGTH_SHORT).show();
+                        // Save user & Password
+                        if (ckbRemember.isChecked()) {
+
+                            Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
+                            Paper.book().write(Common.USER_KEY, edtName.getText().toString());
+                            Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                        }
+
+                        Intent OrderStatusIntent = new Intent(SignIn.this, OrderStatus.class);
+                        Common.currentUser = userWorker;
+                        startActivity(OrderStatusIntent);
+                        finish();
+
+                        Toast.makeText(SignIn.this, "Im "+Name, Toast.LENGTH_SHORT).show();
 
                     } else if (userManger.getName().equals(Name) && userManger.getPassword().equals(password)) {
+
+                        // Save user & Password
+                        if (ckbRemember.isChecked()) {
+
+                            Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
+                            Paper.book().write(Common.USER_KEY, edtName.getText().toString());
+                            Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                        }
                         Intent HomeIntent = new Intent(SignIn.this, Home.class);
                         Common.currentUser = userManger;
                         startActivity(HomeIntent);
                         finish();
                     } else {
+                        mDialog.dismiss();
                         Toast.makeText(SignIn.this, "Wrong !!!", Toast.LENGTH_SHORT).show();
                     }
 
