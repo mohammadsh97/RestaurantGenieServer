@@ -136,6 +136,41 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 //
 //    }
 
+    private void loadMenu() {
+        options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(categories, Category.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull final Category model) {
+                Picasso.with(getBaseContext())
+                        .load(model.getImage())
+                        .into(holder.imageView);
+                holder.txtMenuName.setText(model.getName());
+                holder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onClick(View view, int position, boolean isLongClick) {
+                        // send categoryId and start new activity
+                        Intent foodList = new Intent(Home.this, FoodList.class);
+                        foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
+                        startActivity(foodList);
+                    }
+                });
+            }
+            @NonNull
+            @Override
+            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_item, parent, false);
+                return new MenuViewHolder(view);
+            }
+        };
+        adapter.startListening();
+        adapter.notifyDataSetChanged(); // Refresh data if have data changed
+        recycler_menu.setAdapter(adapter);
+    }
+
     /**
      * Adding new category
      */
@@ -262,40 +297,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
-
-    private void loadMenu() {
-        options = new FirebaseRecyclerOptions.Builder<Category>()
-                .setQuery(categories, Category.class)
-                .build();
-
-        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull final Category model) {
-                Picasso.with(getBaseContext())
-                        .load(model.getImage())
-                        .into(holder.imageView);
-                holder.txtMenuName.setText(model.getName());
-                holder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-                        // send categoryId and start new activity
-                        Intent foodList = new Intent(Home.this, FoodList.class);
-                        foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
-                        startActivity(foodList);
-                    }
-                });
-            }
-            @NonNull
-            @Override
-            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.menu_item, parent, false);
-                return new MenuViewHolder(view);
-            }
-        };
-        adapter.startListening();
-        adapter.notifyDataSetChanged(); // Refresh data if have data changed
-        recycler_menu.setAdapter(adapter);
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
     }
 
     @Override
@@ -337,13 +345,20 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("statmentWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.time_table) {
+        if (id == R.id.nav_menu) {
+            adapter.startListening();
+            recycler_menu.setAdapter(adapter);
+            recycler_menu.getAdapter().notifyDataSetChanged();
+            recycler_menu.scheduleLayoutAnimation();
+
+        } else if (id == R.id.time_table) {
             Intent timeTableIntent = new Intent(Home.this, TimeTable.class);
             startActivity(timeTableIntent);
         } else if (id == R.id.nav_orders) {
@@ -357,6 +372,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             Intent signIn = new Intent(Home.this, MainActivity.class);
             signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(signIn);
+        }else if (id == R.id.add_staff) {
+            Intent AddStaffIntent = new Intent(Home.this, AddStaff.class);
+            startActivity(AddStaffIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -509,14 +527,4 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     });
         }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapter != null)
-            adapter.startListening();
-    }
-
-
 }

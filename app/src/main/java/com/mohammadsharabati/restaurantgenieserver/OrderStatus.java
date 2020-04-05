@@ -78,7 +78,7 @@ public class OrderStatus extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull OrderViewHolder viewHolder, int position, final Request model) {
                 viewHolder.txtOrderId.setText(adapter.getRef(position).getKey());
                 viewHolder.txtOrderStatus.setText(Common.convertCodeToStatus(model.getStatus()));
-                viewHolder.txtOrderAddress.setText(model.getAddress());
+                viewHolder.txtOrderNote.setText(model.getNote());
                 viewHolder.txtOrderPhone.setText(model.getPhone());
 
                 viewHolder.setItemClickListener(new ItemClickListener() {

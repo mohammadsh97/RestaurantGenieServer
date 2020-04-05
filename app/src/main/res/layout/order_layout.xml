@@ -69,12 +69,12 @@
                     android:textStyle="italic"/>
 
                 <TextView
-                    android:id="@+id/order_address"
+                    android:id="@+id/order_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:gravity="center_vertical|start"
-                    android:text="Address"
+                    android:text="Note"
                     android:textAllCaps="true"
                     android:textStyle="italic"/>
 
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="4">
+            android:weightSum="3">
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnEdit"
@@ -120,16 +120,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Detail"
-                app:fButtonColor="@android:color/white"
-                fbutton:cornerRadius="0dp"/>
-
-
-            <info.hoang8f.widget.FButton
-                android:id="@+id/btnDirection"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Direction"
                 app:fButtonColor="@android:color/white"
                 fbutton:cornerRadius="0dp"/>
 

@@ -1,16 +1,13 @@
 package com.mohammadsharabati.restaurantgenieserver;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import io.paperdb.Paper;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,8 +18,6 @@ import com.mohammadsharabati.restaurantgenieserver.Model.User;
 
 public class MainActivity extends AppCompatActivity {
 
-    public User userManger;
-    public User userWorker;
     Button btnSignIn, btnSignUp;
 
     @Override
@@ -46,9 +41,8 @@ public class MainActivity extends AppCompatActivity {
                     if (!bN.isEmpty() && !user.isEmpty() && !pwd.isEmpty()) {
                         login(bN, user, pwd);
                     }
-                }
-                else{
-                    Intent signIn = new Intent(MainActivity.this,SignIn.class);
+                } else {
+                    Intent signIn = new Intent(MainActivity.this, SignIn.class);
                     startActivity(signIn);
                 }
             }
@@ -79,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     private void signInUser(final String BusinessNumber, final String Name, final String password) {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -88,37 +83,41 @@ public class MainActivity extends AppCompatActivity {
         mDialog.setMessage("Please waiting...");
         mDialog.show();
 
-        users.addValueEventListener(new ValueEventListener() {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 //Chech if user not exist in databases
                 if (dataSnapshot.child(BusinessNumber).exists()) {
-                    // Get user information
                     mDialog.dismiss();
-                    userManger = dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getValue(User.class);
-                    userWorker = dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getValue(User.class);
-                    userManger.setBusinessNumber(BusinessNumber);
-                    userWorker.setBusinessNumber(BusinessNumber);
 
-                    // check Name and password
-                    if (userWorker.getName().equals(Name) && userWorker.getPassword().equals(password)) {
-                        // Login ok
+                    for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getChildren()) {
+                        User model = snapshot.getValue(User.class);
+                        // check Name and password for staff
+                        if (model.getName().equals(Name) && model.getPassword().equals(password)) {
+                            // Login ok
+                            Common.currentUser = model;
+                            Intent OrderStatusIntent = new Intent(MainActivity.this, OrderStatus.class);
+                            startActivity(OrderStatusIntent);
+                            finish();
 
-                        Intent OrderStatusIntent = new Intent(MainActivity.this, OrderStatus.class);
-                        Common.currentUser = userWorker;
-                        startActivity(OrderStatusIntent);
-                        finish();
+                            Toast.makeText(MainActivity.this, "Im " + Name, Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-                        Toast.makeText(MainActivity.this, "Im "+Name, Toast.LENGTH_SHORT).show();
+                    for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getChildren()) {
+                        User model = snapshot.getValue(User.class);
+                        // check Name and password for staff
+                        if (model.getName().equals(Name) && model.getPassword().equals(password)) {
+                            Common.currentUser = model;
+                            Intent HomeIntent = new Intent(MainActivity.this, Home.class);
+                            startActivity(HomeIntent);
+                            finish();
 
-                    } else if (userManger.getName().equals(Name) && userManger.getPassword().equals(password)) {
+                        }
+                    }
 
-                        Intent HomeIntent = new Intent(MainActivity.this, Home.class);
-                        Common.currentUser = userManger;
-                        startActivity(HomeIntent);
-                        finish();
-                    } else {
-                        mDialog.dismiss();
+                    if (Common.currentUser == null) {
                         Toast.makeText(MainActivity.this, "Wrong !!!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

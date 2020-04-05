@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -53,7 +54,7 @@ public class SignUp extends AppCompatActivity {
                     mDialog.setMessage("Please waiting...");
                     mDialog.show();
 
-                    table_user.addValueEventListener(new ValueEventListener() {
+                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             //Check if already Business Number
@@ -76,8 +77,11 @@ public class SignUp extends AppCompatActivity {
                                     Toast.makeText(SignUp.this, "You must enter Password to register!", Toast.LENGTH_SHORT).show();
                                 } else {
                                     User user = new User(edtBusinessNumber.getText().toString(), edtEmail.getText().toString(), edtPhone.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
-                                    table_user.child(edtBusinessNumber.getText().toString()).child("Worker").child("Table").setValue(user);
+                                    table_user.child(edtBusinessNumber.getText().toString()).child("Worker").child("Manger").push().setValue(user);
                                     Toast.makeText(SignUp.this, "sign up successfully !", Toast.LENGTH_SHORT).show();
+                                    Common.currentUser = user;
+                                    Intent HomeIntent = new Intent(SignUp.this, Home.class);
+                                    startActivity(HomeIntent);
                                     finish();
                                 }
                             }

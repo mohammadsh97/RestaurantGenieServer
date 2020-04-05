@@ -6,26 +6,33 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
         <item
             android:id="@+id/time_table"
-            android:icon="@drawable/ic_restaurant_black_24dp"
+            android:icon="@drawable/ic_access_time_black_24dp"
             android:iconTint="@android:color/white"
             android:title="Time Table" />
+
         <item
             android:id="@+id/nav_menu"
             android:icon="@drawable/ic_restaurant_black_24dp"
             android:iconTint="@android:color/white"
             android:title="Menu" />
         <item
-            android:id="@+id/nav_cart"
-            android:icon="@drawable/ic_shopping_cart_black_24dp"
-            android:iconTint="@android:color/white"
-            android:title="Cart" />
-        <item
             android:id="@+id/nav_orders"
             android:icon="@drawable/ic_access_time_black_24dp"
             android:iconTint="@android:color/white"
             android:title="Orders" />
+        <item
+            android:id="@+id/add_staff"
+            android:icon="@drawable/ic_person_add_black_24dp"
+            android:iconTint="@android:color/white"
+            android:title="Staff" />
+        <item
+            android:id="@+id/add_table"
+            android:icon="@drawable/ic_person_add_black_24dp"
+            android:iconTint="@android:color/white"
+            android:title="Table" />
         <item
             android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_exit_to_app_black_24dp"

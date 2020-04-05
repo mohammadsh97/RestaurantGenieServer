@@ -35,16 +35,16 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
 //        btnDirection = (Button) itemView.findViewById(R.id.btnDirection);
 //    }
 
-    public TextView txtOrderId, txtOrderStatus, txtOrderPhone, txtOrderAddress;
+    public TextView txtOrderId, txtOrderStatus, txtOrderPhone, txtOrderNote;
 
-    public Button btnEdit, btnRemove, btnDetail, btnDirection;
+    public Button btnEdit, btnRemove, btnDetail;
 
     private ItemClickListener itemClickListener;
 
     public OrderViewHolder(View itemView) {
         super(itemView);
 
-        txtOrderAddress = (TextView) itemView.findViewById(R.id.order_address);
+        txtOrderNote = (TextView) itemView.findViewById(R.id.order_note);
         txtOrderId = (TextView) itemView.findViewById(R.id.order_id);
         txtOrderStatus = (TextView) itemView.findViewById(R.id.order_status);
         txtOrderPhone = (TextView) itemView.findViewById(R.id.order_phone);
@@ -52,7 +52,6 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
         btnRemove = (Button) itemView.findViewById(R.id.btnRemove);
         btnDetail = (Button) itemView.findViewById(R.id.btnDetail);
-        btnDirection = (Button) itemView.findViewById(R.id.btnDirection);
 
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);

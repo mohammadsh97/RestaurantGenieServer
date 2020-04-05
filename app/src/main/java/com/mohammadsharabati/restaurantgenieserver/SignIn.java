@@ -7,6 +7,7 @@ import io.paperdb.Paper;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -24,10 +25,8 @@ public class SignIn extends AppCompatActivity {
 
     private MaterialEditText edtBusinessNumber, edtName, edtPassword;
     private Button btnSignIn;
-    FirebaseDatabase db;
-    DatabaseReference users;
-    public User userManger;
-    public User userWorker;
+    private FirebaseDatabase db;
+    private DatabaseReference users;
     CheckBox ckbRemember;
 //    TextView txtForgotPwd;
 
@@ -40,7 +39,7 @@ public class SignIn extends AppCompatActivity {
         edtName = (MaterialEditText) findViewById(R.id.edtName);
         edtPassword = (MaterialEditText) findViewById(R.id.edtPassword);
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
-        ckbRemember =(CheckBox)findViewById(R.id.ckbRemember);
+        ckbRemember = (CheckBox) findViewById(R.id.ckbRemember);
 //        txtForgotPwd =(TextView) findViewById(R.id.txtForgotPwd);
 
         Paper.init(this);
@@ -66,9 +65,9 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View view) {
                 if (Common.isConnectedToInternet(getBaseContext())) {
 
-                    if (edtBusinessNumber.getText().toString().trim().length() != 0)
+                    if (edtBusinessNumber.getText().toString().trim().length() != 0) {
                         signInUser(edtBusinessNumber.getText().toString(), edtName.getText().toString(), edtPassword.getText().toString());
-                    else
+                    } else
                         Toast.makeText(SignIn.this, "Complete the blank sentences!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(SignIn.this, "Please check your network connection", Toast.LENGTH_SHORT).show();
@@ -86,65 +85,76 @@ public class SignIn extends AppCompatActivity {
         mDialog.setMessage("Please waiting...");
         mDialog.show();
 
-        users.addValueEventListener(new ValueEventListener() {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mDialog.dismiss();
                 //Chech if user not exist in databases
                 if (dataSnapshot.child(BusinessNumber).exists()) {
-                    // Get user information
-                    mDialog.dismiss();
-                    userManger = dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getValue(User.class);
-                    userWorker = dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getValue(User.class);
-                    userManger.setBusinessNumber(BusinessNumber);
-                    userWorker.setBusinessNumber(BusinessNumber);
 
-                    // check Name and password
-                    if (userWorker.getName().equals(Name) && userWorker.getPassword().equals(password)) {
-                        // Login ok
+                    for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getChildren()) {
+                        User model = snapshot.getValue(User.class);
+                        Log.v("MyTAG", "mohammad" + model.getBusinessNumber());
 
-                        // Save user & Password
-                        if (ckbRemember.isChecked()) {
+                        // check Name and password for staff
+                        if (model.getName().equals(Name) && model.getPassword().equals(password)) {
+                            // Login ok
 
-                            Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
-                            Paper.book().write(Common.USER_KEY, edtName.getText().toString());
-                            Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                            // Save user & Password
+                            if (ckbRemember.isChecked()) {
+
+                                Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
+                                Paper.book().write(Common.USER_KEY, edtName.getText().toString());
+                                Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                            }
+
+                            Common.currentUser = model;
+                            Intent OrderStatusIntent = new Intent(SignIn.this, OrderStatus.class);
+                            startActivity(OrderStatusIntent);
+                            finish();
+
+                            Toast.makeText(SignIn.this, "Im " + Name, Toast.LENGTH_SHORT).show();
+
                         }
+                    }
 
-                        Intent OrderStatusIntent = new Intent(SignIn.this, OrderStatus.class);
-                        Common.currentUser = userWorker;
-                        startActivity(OrderStatusIntent);
-                        finish();
+                    for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getChildren()) {
+                        User model = snapshot.getValue(User.class);
+                        Log.v("MyTAG", "mohammad" + model.getBusinessNumber());
 
-                        Toast.makeText(SignIn.this, "Im "+Name, Toast.LENGTH_SHORT).show();
+                        // check Name and password for staff
+                        if (model.getName().equals(Name) && model.getPassword().equals(password)) {
+                            // Save user & Password
+                            if (ckbRemember.isChecked()) {
 
-                    } else if (userManger.getName().equals(Name) && userManger.getPassword().equals(password)) {
+                                Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
+                                Paper.book().write(Common.USER_KEY, edtName.getText().toString());
+                                Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
+                            }
+                            Common.currentUser = model;
+                            Intent HomeIntent = new Intent(SignIn.this, Home.class);
+                            startActivity(HomeIntent);
+                            finish();
 
-                        // Save user & Password
-                        if (ckbRemember.isChecked()) {
-
-                            Paper.book().write(Common.USER_BN, edtBusinessNumber.getText().toString());
-                            Paper.book().write(Common.USER_KEY, edtName.getText().toString());
-                            Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
                         }
-                        Intent HomeIntent = new Intent(SignIn.this, Home.class);
-                        Common.currentUser = userManger;
-                        startActivity(HomeIntent);
-                        finish();
-                    } else {
-                        mDialog.dismiss();
+                    }
+
+                    if (Common.currentUser == null) {
                         Toast.makeText(SignIn.this, "Wrong !!!", Toast.LENGTH_SHORT).show();
                     }
 
                 } else {
-                    mDialog.dismiss();
                     Toast.makeText(SignIn.this, "Restaurant not exist in Database", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
     }
 }
+
