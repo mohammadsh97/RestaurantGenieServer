@@ -375,6 +375,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }else if (id == R.id.add_staff) {
             Intent AddStaffIntent = new Intent(Home.this, AddStaff.class);
             startActivity(AddStaffIntent);
+        }else if (id == R.id.add_table) {
+            Intent AddTableIntent = new Intent(Home.this, AddTable.class);
+            startActivity(AddTableIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
