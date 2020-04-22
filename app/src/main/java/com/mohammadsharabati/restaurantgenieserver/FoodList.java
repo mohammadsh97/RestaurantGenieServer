@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -44,9 +45,7 @@ public class FoodList extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-
     private FloatingActionButton fab;
-
     private RelativeLayout rootLayout;
 
     //Firebase
@@ -65,6 +64,8 @@ public class FoodList extends AppCompatActivity {
 
     private Food newFood;
     private Uri saveUri;
+
+    private Boolean flag_upload = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,68 +142,13 @@ public class FoodList extends AppCompatActivity {
         adapter.stopListening();
     }
 
-    /**
-     * Showing dialog to add new food
-     */
-    private void showAddFoodDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this);
-        alertDialog.setTitle("Add new Food");
-        alertDialog.setMessage("Please fill full information");
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View add_menu_layout = inflater.inflate(R.layout.add_new_food_layout, null);
-
-        edtName = add_menu_layout.findViewById(R.id.edtName);
-        edtDescription = add_menu_layout.findViewById(R.id.edtDescription);
-        edtPrice = add_menu_layout.findViewById(R.id.edtPrice);
-        edtDiscount = add_menu_layout.findViewById(R.id.edtDiscount);
-
-        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
-        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
-
-        alertDialog.setView(add_menu_layout);
-        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
-
-        // Event for button
-        btnSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chooseImage(); // Let user select image from Gallery and save Uri of this image
-
-            }
-        });
-
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadImage();
-            }
-        });
-
-        // Set Button
-        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-
-                // Here, just create new category
-                if (newFood != null) {
-                    foodList.push().setValue(newFood);
-                    Snackbar.make(rootLayout, "New Category" + newFood.getName() + " was added", Snackbar.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alertDialog.show();
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
     }
-
 
     /**
      * Letting user selects image from Gallery and save Uri for image
@@ -275,6 +221,7 @@ public class FoodList extends AppCompatActivity {
             btnSelect.setText("Image Selected !");
         }
     }
+
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getTitle().equals(Common.UPDATE)) {
@@ -288,8 +235,75 @@ public class FoodList extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * Showing dialog to add new food
+     */
+    private void showAddFoodDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
+        alertDialog.setTitle("Add new Food");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_menu_layout = inflater.inflate(R.layout.add_new_food_layout, null);
+
+        edtName = add_menu_layout.findViewById(R.id.edtName);
+        edtDescription = add_menu_layout.findViewById(R.id.edtDescription);
+        edtPrice = add_menu_layout.findViewById(R.id.edtPrice);
+        edtDiscount = add_menu_layout.findViewById(R.id.edtDiscount);
+
+        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
+        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
+
+        alertDialog.setView(add_menu_layout);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+
+        // Event for button
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flag_upload = true;
+                chooseImage(); // Let user select image from Gallery and save Uri of this image
+
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (flag_upload == false)
+                    Toast.makeText(FoodList.this, "Please select the image", Toast.LENGTH_SHORT).show();
+                else {
+                    uploadImage();
+                    flag_upload = false;
+                }
+            }
+        });
+
+        // Set Button
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                // Here, just create new category
+                if (newFood != null) {
+                    foodList.push().setValue(newFood);
+                    Snackbar.make(rootLayout, "New Category" + newFood.getName() + " was added", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+    }
+
     private void showUpdateFoodDialog(final String key, final Food item) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
         alertDialog.setTitle("Edit Food");
         alertDialog.setMessage("Please fill full information");
 
@@ -310,6 +324,7 @@ public class FoodList extends AppCompatActivity {
         btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
         btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
 
+        btnUpload.setText("Update");
 
         // Event for button
         btnSelect.setOnClickListener(new View.OnClickListener() {
@@ -403,11 +418,5 @@ public class FoodList extends AppCompatActivity {
         foodList.child(key).removeValue();
 
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapter != null)
-            adapter.startListening();
-    }
+
 }

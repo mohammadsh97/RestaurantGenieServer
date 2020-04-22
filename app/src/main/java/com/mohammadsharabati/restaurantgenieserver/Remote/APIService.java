@@ -2,6 +2,7 @@ package com.mohammadsharabati.restaurantgenieserver.Remote;
 
 
 
+import com.mohammadsharabati.restaurantgenieserver.Model.DataMessage;
 import com.mohammadsharabati.restaurantgenieserver.Model.MyResponse;
 import com.mohammadsharabati.restaurantgenieserver.Model.Sender;
 
@@ -19,5 +20,5 @@ public interface APIService {
     )
 
     @POST("fcm/send")
-    retrofit2.Call<MyResponse> sendNotification(@Body Sender body);
+    retrofit2.Call<MyResponse> sendNotification(@Body DataMessage body);
 }

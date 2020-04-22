@@ -4,14 +4,14 @@ package com.mohammadsharabati.restaurantgenieserver.Model;
 
 public class Token {
     public String token;
-    public boolean isServerToken;
-
-    public Token(String token, boolean isServerToken) {
-        this.token = token;
-        this.isServerToken = isServerToken;
-    }
+    public boolean serverToken;
 
     public Token() {
+    }
+
+    public Token(String token, boolean serverToken) {
+        this.token = token;
+        this.serverToken = serverToken;
     }
 
     public String getToken() {
@@ -23,10 +23,10 @@ public class Token {
     }
 
     public boolean isServerToken() {
-        return isServerToken;
+        return serverToken;
     }
 
     public void setServerToken(boolean serverToken) {
-        isServerToken = serverToken;
+        this.serverToken = serverToken;
     }
 }

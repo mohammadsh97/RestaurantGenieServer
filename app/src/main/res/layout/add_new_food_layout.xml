@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardElevation="4dp">
 
@@ -18,7 +19,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
-            android:textSize="34sp"
+            android:textSize="20sp"
             android:inputType="text"
             app:met_baseColor="@color/colorPrimary"
             app:met_floatingLabel="highlight"
@@ -32,7 +33,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:inputType="text"
             app:met_baseColor="@color/colorPrimary"
             app:met_floatingLabel="highlight"
@@ -46,7 +47,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
-            android:textSize="34sp"
+            android:textSize="20sp"
             android:inputType="number"
             app:met_baseColor="@color/colorPrimary"
             app:met_floatingLabel="highlight"
@@ -60,7 +61,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/colorPrimary"
             android:textColor="@color/colorPrimary"
-            android:textSize="34sp"
+            android:textSize="20sp"
             android:inputType="text"
             app:met_baseColor="@color/colorPrimary"
             app:met_floatingLabel="highlight"
@@ -70,7 +71,7 @@
 
         <LinearLayout
             android:weightSum="2"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -81,8 +82,8 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_weight="0"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 app:fButtonColor="@color/colorPrimary"
@@ -93,20 +94,20 @@
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnUpload"
-                android:text="UPLOAD"
+                android:text="ADD TO LIST FOOD"
                 android:textColor="@android:color/white"
                 android:layout_alignParentBottom="true"
                 android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_weight="0"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                app:fButtonColor="@color/colorPrimaryDark"
+                app:fButtonColor="@color/colorPrimary"
                 app:shadowColor="@android:color/black"
                 app:shadowEnabled="true"
                 app:shadowHeight="5dp"
-                app:cornerRadius="4dp"/>
+                app:cornerRadius="4dp" />
 
         </LinearLayout>
 

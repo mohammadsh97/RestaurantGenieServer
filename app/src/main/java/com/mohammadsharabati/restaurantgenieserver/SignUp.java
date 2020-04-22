@@ -54,7 +54,7 @@ public class SignUp extends AppCompatActivity {
                     mDialog.setMessage("Please waiting...");
                     mDialog.show();
 
-                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
+                    table_user.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             //Check if already Business Number

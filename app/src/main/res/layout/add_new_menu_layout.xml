@@ -24,8 +24,7 @@
             android:inputType="text"
             android:text=""
             android:textColor="@color/colorPrimary"
-
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:met_baseColor="@color/colorPrimary"
             app:met_floatingLabel="highlight"
             app:met_primaryColor="@color/colorPrimary"
@@ -35,19 +34,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4">
+            android:orientation="vertical"
+            android:weightSum="2">
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnSelect"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_weight="2"
+                android:layout_weight="0"
                 android:background="@color/colorPrimary"
-                android:text="@string/SELECT"
+                android:text="SELECT PHOTO"
                 android:textColor="@android:color/white"
                 app:fButtonColor="@color/colorPrimary"
                 app:cornerRadius="4dp"
@@ -57,21 +56,20 @@
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnUpload"
-                android:layout_width="wrap_content"
-                android:layout_weight="2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/btnSignUp"
-                android:backgroundTint="@color/btnSignUp"
-                android:text="@string/UPLOAD"
+                android:layout_weight="0"
+                android:background="@color/colorPrimary"
+                android:text="Add TO MENU"
                 android:textColor="@android:color/white"
-                app:fButtonColor="@color/colorPrimaryDark"
+                app:fButtonColor="@color/colorPrimary"
                 app:cornerRadius="4dp"
                 app:shadowColor="@android:color/black"
                 app:shadowEnabled="true"
-                app:shadowHeight="5dp" />
+                app:shadowHeight="5dp"  />
 
         </LinearLayout>
 

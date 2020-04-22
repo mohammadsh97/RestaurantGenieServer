@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,8 +19,11 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
@@ -36,6 +40,7 @@ public class AddTable extends AppCompatActivity {
     private FirebaseRecyclerOptions<User> options;
     private FirebaseRecyclerAdapter<User, TableViewHolder> adapter;
 
+    private boolean flag_btnAddTable = true;
 
     //Add New Menu layout
     MaterialEditText edtUserName, edtPassword, edtPhoneNumber;
@@ -142,7 +147,7 @@ public class AddTable extends AppCompatActivity {
      */
 
     private void showDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this, R.style.DialogTheme);
         alertDialog.setTitle("Add new Table");
         alertDialog.setMessage("Please fill full information");
 
@@ -162,21 +167,56 @@ public class AddTable extends AppCompatActivity {
         btnAddTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!edtUserName.getText().toString().isEmpty() && !edtPassword.getText().toString().isEmpty()) {
+                if (!edtUserName.getText().toString().isEmpty() && !edtPassword.getText().toString().isEmpty() && !edtPhoneNumber.getText().toString().trim().isEmpty()) {
 
-                    newTable = new User(Common.currentUser.getBusinessNumber(), ""
-                            , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
-                            , edtPassword.getText().toString());
+                    //Int Firebase
+                    final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    final DatabaseReference table_user = db.getReference("RestaurantGenie");
 
-                    if (newTable != null) {
-                        Tables.push().setValue(newTable);
-                    }
-                    Toast.makeText(AddTable.this, "The staff is added", Toast.LENGTH_SHORT).show();
+                    final ProgressDialog mDialog = new ProgressDialog(AddTable.this);
+                    mDialog.setMessage("Please waiting...");
+                    mDialog.show();
+
+                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            mDialog.dismiss();
+                            for (DataSnapshot snapshot : dataSnapshot.child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table").getChildren()) {
+
+                                User model = snapshot.getValue(User.class);
+
+                                // check Name and password for staff
+                                if (model.getName().equals(edtUserName.getText().toString().trim())) {
+                                    Toast.makeText(AddTable.this, "The username is already exist", Toast.LENGTH_SHORT).show();
+                                    flag_btnAddTable = false;
+                                    break;
+                                }
+                            }
+
+                            if (flag_btnAddTable == true) {
+                                newTable = new User(Common.currentUser.getBusinessNumber(), ""
+                                        , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
+                                        , edtPassword.getText().toString());
+
+                                if (newTable != null) {
+                                    Tables.push().setValue(newTable);
+                                }
+                                Toast.makeText(AddTable.this, "The staff is added", Toast.LENGTH_SHORT).show();
+                            } else {
+                                flag_btnAddTable = true;
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 } else
                     Toast.makeText(AddTable.this, "You must enter user name and password", Toast.LENGTH_SHORT).show();
             }
         });
-
 
         // set button
         alertDialog.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
@@ -185,6 +225,7 @@ public class AddTable extends AppCompatActivity {
                 dialogInterface.dismiss();
             }
         });
+        flag_btnAddTable = true;
         alertDialog.show();
     }
 

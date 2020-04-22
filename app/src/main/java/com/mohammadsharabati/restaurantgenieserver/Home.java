@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -32,6 +33,7 @@ import com.google.firebase.storage.UploadTask;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.Category;
+import com.mohammadsharabati.restaurantgenieserver.Model.Token;
 import com.mohammadsharabati.restaurantgenieserver.ViewHolder.MenuViewHolder;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
@@ -60,6 +62,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    private Boolean flag_upload = false;
 
     //Add New Menu layout
     MaterialEditText edtName;
@@ -120,21 +123,20 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         recycler_menu.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(mLayoutManager);
+
         loadMenu();
 
-
-
-//        updateToken(FirebaseInstanceId.getInstance().getToken());
+        updateToken(FirebaseInstanceId.getInstance().getToken());
 
     }
 
-//    private void updateToken(String token) {
-//        FirebaseDatabase db = FirebaseDatabase.getInstance();
-//        DatabaseReference tokens = db.getReference("Tokens");
-//        Token data = new Token(token, true); // false because this token send from Client app
-//        tokens.child(Common.currentUser.getPhone()).setValue(data);
-//
-//    }
+    private void updateToken(String token) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference tokens = db.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Tokens");
+        Token data = new Token(token, true); // true because this token send from Server app
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
+
+    }
 
     private void loadMenu() {
         options = new FirebaseRecyclerOptions.Builder<Category>()
@@ -169,112 +171,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         adapter.startListening();
         adapter.notifyDataSetChanged(); // Refresh data if have data changed
         recycler_menu.setAdapter(adapter);
-    }
 
-    /**
-     * Adding new category
-     */
-
-    private void showDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
-        alertDialog.setTitle("Add new Category");
-        alertDialog.setMessage("Please fill full information");
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View add_menu_layout = inflater.inflate(R.layout.add_new_menu_layout, null);
-
-        edtName = add_menu_layout.findViewById(R.id.edtName);
-        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
-        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
-
-        alertDialog.setView(add_menu_layout);
-        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
-
-        // event for button
-        btnSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseImage();
-            }
-        });
-
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                uploadImage();
-            }
-        });
-
-        // set button
-        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-                // Here, pushing new category to Firebase Database
-                if (newCategory != null) {
-                    categories.push().setValue(newCategory);
-                    Snackbar.make(drawer, "New Category " + newCategory.getName() + " was added",
-                            Snackbar.LENGTH_SHORT).show();
-                }
-            }
-        });
-        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        alertDialog.show();
-    }
-
-    /**
-     * Uploading image to Firebase Storage
-     */
-    private void uploadImage() {
-        if (saveUri != null) {
-            final ProgressDialog mDialog = new ProgressDialog(this);
-            mDialog.setMessage("Uploading...");
-            mDialog.show();
-
-            // set image name
-            String imageName = UUID.randomUUID().toString();
-            // set folder
-            final StorageReference imageFolder = storageReference.child("images/" + imageName);
-            // uploading image to folder
-            imageFolder.putFile(saveUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            mDialog.dismiss();
-                            Toast.makeText(Home.this, "Uploaded!!!", Toast.LENGTH_SHORT).show();
-                            // set value for new Category if image uploaded
-                            // and we can get download link 'uri'
-                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    newCategory = new Category(edtName.getText().toString(),
-                                            uri.toString());
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            mDialog.dismiss();
-                            Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            // don't worry about this error
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred() /
-                                    taskSnapshot.getTotalByteCount());
-                            mDialog.setMessage("Uploaded " + progress + "%");
-                        }
-                    });
-        }
     }
 
     @Override
@@ -405,7 +302,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
      */
     private void deleteCategory(String key) {
         //First, we need get all food in category
-        DatabaseReference foods = database.getReference("Foods");
+        DatabaseReference foods = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Foods");
+
         Query foodInCategory = foods.orderByChild("menuId").equalTo(key);
         foodInCategory.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -425,11 +323,127 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     /**
+     * Uploading image to Firebase Storage
+     */
+    private void uploadImage() {
+        if (saveUri != null) {
+            final ProgressDialog mDialog = new ProgressDialog(this);
+            mDialog.setMessage("Uploading...");
+            mDialog.show();
+
+            // set image name
+            String imageName = UUID.randomUUID().toString();
+            // set folder
+            final StorageReference imageFolder = storageReference.child("images/" + imageName);
+            // uploading image to folder
+            imageFolder.putFile(saveUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            mDialog.dismiss();
+                            Toast.makeText(Home.this, "Uploaded!!!", Toast.LENGTH_SHORT).show();
+                            // set value for new Category if image uploaded
+                            // and we can get download link 'uri'
+                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    newCategory = new Category(edtName.getText().toString(),
+                                            uri.toString());
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            mDialog.dismiss();
+                            Toast.makeText(Home.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            // don't worry about this error
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() /
+                                    taskSnapshot.getTotalByteCount());
+                            mDialog.setMessage("Uploaded " + progress + "%");
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Adding new category
+     */
+
+    private void showDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
+        alertDialog.setTitle("Add new Category");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_menu_layout = inflater.inflate(R.layout.add_new_menu_layout, null);
+
+        edtName = add_menu_layout.findViewById(R.id.edtName);
+        btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
+        btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
+
+        alertDialog.setView(add_menu_layout);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+
+        // event for button
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                flag_upload = true;
+                chooseImage();
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (flag_upload == false)
+                    Toast.makeText(Home.this, "Please select the image", Toast.LENGTH_SHORT).show();
+                else {
+                    uploadImage();
+                    flag_upload = false;
+                }
+
+
+            }
+        });
+
+        // set button
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                // Here, pushing new category to Firebase Database
+                if (newCategory != null) {
+                    categories.push().setValue(newCategory);
+                    Snackbar.make(drawer, "New Category " + newCategory.getName() + " was added",
+                            Snackbar.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+    /**
      * Update category item
      */
     private void showUpdateDialog(final String key, final Category item) {
         // set title and message
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
         alertDialog.setTitle("Update Category");
         alertDialog.setMessage("Please fill full information");
 
@@ -440,6 +454,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         edtName = add_menu_layout.findViewById(R.id.edtName);
         btnUpload = add_menu_layout.findViewById(R.id.btnUpload);
         btnSelect = add_menu_layout.findViewById(R.id.btnSelect);
+
+        btnUpload.setText("Update");
 
         // set layout and icon for dialog
         alertDialog.setView(add_menu_layout);
@@ -468,6 +484,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
+
 
                 // Update information on Firebase
                 item.setName(edtName.getText().toString());

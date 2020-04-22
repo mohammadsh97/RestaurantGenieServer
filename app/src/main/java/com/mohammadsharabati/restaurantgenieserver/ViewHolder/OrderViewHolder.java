@@ -15,27 +15,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         View.OnClickListener,
         View.OnCreateContextMenuListener {
 
-//    public TextView txtOrderId, txtOrderDate, txtOrderStatus, txtOrderPhone, txtOrderAddress;
-//
-//    public Button btnEdit, btnRemove, btnDetail, btnDirection;
-//
-//
-//    public OrderViewHolder(View itemView) {
-//        super(itemView);
-//
-//        txtOrderId = (TextView) itemView.findViewById(R.id.order_id);
-//        txtOrderDate = (TextView) itemView.findViewById(R.id.order_date);
-//        txtOrderPhone = (TextView) itemView.findViewById(R.id.order_phone);
-//        txtOrderStatus = (TextView) itemView.findViewById(R.id.order_status);
-//        txtOrderAddress = (TextView) itemView.findViewById(R.id.order_address);
-//
-//        btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
-//        btnRemove = (Button) itemView.findViewById(R.id.btnRemove);
-//        btnDetail = (Button) itemView.findViewById(R.id.btnDetail);
-//        btnDirection = (Button) itemView.findViewById(R.id.btnDirection);
-//    }
-
-    public TextView txtOrderId, txtOrderStatus, txtOrderPhone, txtOrderNote;
+    public TextView txtOrderId,txtOrderDate, txtOrderStatus, txtOrderPhone, txtOrderNote;
 
     public Button btnEdit, btnRemove, btnDetail;
 
@@ -45,6 +25,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         super(itemView);
 
         txtOrderNote = (TextView) itemView.findViewById(R.id.order_note);
+        txtOrderDate = (TextView) itemView.findViewById(R.id.order_date);
         txtOrderId = (TextView) itemView.findViewById(R.id.order_id);
         txtOrderStatus = (TextView) itemView.findViewById(R.id.order_status);
         txtOrderPhone = (TextView) itemView.findViewById(R.id.order_phone);

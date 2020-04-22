@@ -125,18 +125,14 @@ public class DayFragment extends Fragment {
 
         // Set up Layout Manager, reverse layout
         LinearLayoutManager mManager = new LinearLayoutManager(mActivity);
-//        mManager.setReverseLayout(true);
-//        mManager.setStackFromEnd(true);
+
         recycler_fragment_day.setLayoutManager(mManager);
 
-
-
-//        days.keepSynced(true);
-//        recycler_fragment_day.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         // keyQuery - the Firebase location containing the list of keys to be found in dataRef
-        Log.v("TAG", ">>>>> days is: " + days);
+        Log.v("TAGDAYS", ">>>>> days is: " + days.child("01"));
 //        days = days.child("01");
+
+
         options = new FirebaseRecyclerOptions.Builder<TimeWorker>()
                 .setQuery(days, TimeWorker.class)
                 .build();

@@ -85,7 +85,7 @@ public class SignIn extends AppCompatActivity {
         mDialog.setMessage("Please waiting...");
         mDialog.show();
 
-        users.addListenerForSingleValueEvent(new ValueEventListener() {
+        users.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -7,7 +7,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
+import io.paperdb.Paper;
+
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +20,11 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
@@ -33,6 +40,7 @@ public class AddStaff extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseRecyclerOptions<User> options;
     private FirebaseRecyclerAdapter<User, StaffViewHolder> adapter;
+    private boolean flag_btnAddStaff = true;
 
 
     //Add New Menu layout
@@ -141,7 +149,7 @@ public class AddStaff extends AppCompatActivity {
      */
 
     private void showDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this, R.style.DialogTheme);
         alertDialog.setTitle("Add new Staff");
         alertDialog.setMessage("Please fill full information");
 
@@ -162,18 +170,58 @@ public class AddStaff extends AppCompatActivity {
         btnAddStaff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!edtUserName.getText().toString().isEmpty() && !edtPassword.getText().toString().isEmpty()) {
+                if (!edtUserName.getText().toString().trim().isEmpty() && !edtPassword.getText().toString().trim().isEmpty() && !edtPhoneNumber.getText().toString().trim().isEmpty()) {
 
-                    newStaff = new User(Common.currentUser.getBusinessNumber(), edtEmail.getText().toString()
-                            , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
-                            , edtPassword.getText().toString());
 
-                    if (newStaff != null) {
-                        Staffs.push().setValue(newStaff);
-                    }
-                    Toast.makeText(AddStaff.this, "The staff is added", Toast.LENGTH_SHORT).show();
+                    //Int Firebase
+                    final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    final DatabaseReference table_user = db.getReference("RestaurantGenie");
+
+                    final ProgressDialog mDialog = new ProgressDialog(AddStaff.this);
+                    mDialog.setMessage("Please waiting...");
+                    mDialog.show();
+
+                    table_user.addListenerForSingleValueEvent(new  ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            mDialog.dismiss();
+                            for (DataSnapshot snapshot : dataSnapshot.child(Common.currentUser.getBusinessNumber()).child("Worker").child("Staff").getChildren()) {
+
+                                User model = snapshot.getValue(User.class);
+
+                                // check Name and password for staff
+                                if (model.getName().equals(edtUserName.getText().toString().trim())) {
+                                    Toast.makeText(AddStaff.this, "The username is already exist", Toast.LENGTH_SHORT).show();
+                                    flag_btnAddStaff = false;
+                                    break;
+                                }
+                            }
+
+                            if (flag_btnAddStaff == true) {
+                                newStaff = new User(Common.currentUser.getBusinessNumber(), edtEmail.getText().toString()
+                                        , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
+                                        , edtPassword.getText().toString());
+
+                                if (newStaff != null) {
+                                    Staffs.push().setValue(newStaff);
+                                }
+                                Toast.makeText(AddStaff.this, "The staff is added", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                flag_btnAddStaff = true;
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
                 } else
-                    Toast.makeText(AddStaff.this, "You must enter user name and password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddStaff.this, "You must enter user name and password and phone number", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -185,6 +233,7 @@ public class AddStaff extends AppCompatActivity {
                 dialogInterface.dismiss();
             }
         });
+        flag_btnAddStaff = true;
         alertDialog.show();
     }
 
@@ -196,6 +245,7 @@ public class AddStaff extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
     }
+
 
     private void showUpdateDialog(String key, final User user) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this);
