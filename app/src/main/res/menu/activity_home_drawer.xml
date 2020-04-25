@@ -8,6 +8,11 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/nav_chart"
+            android:icon="@drawable/ic_insert_chart_black_24dp"
+            android:iconTint="@android:color/white"
+            android:title="Chart" />
+        <item
             android:id="@+id/time_table"
             android:icon="@drawable/ic_access_time_black_24dp"
             android:iconTint="@android:color/white"

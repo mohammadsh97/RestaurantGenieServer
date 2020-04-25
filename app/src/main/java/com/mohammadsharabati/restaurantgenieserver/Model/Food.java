@@ -1,7 +1,7 @@
 package com.mohammadsharabati.restaurantgenieserver.Model;
 
 public class Food {
-    private String Name, Image, Description, Price, Discount, MenuId;
+    private String Name, Image, Description, Price, Discount, MenuId,Counter;
 
     public Food() {
     }
@@ -13,6 +13,15 @@ public class Food {
         this.Price = price;
         this.Discount = discount;
         this.MenuId = menuId;
+        this.Counter = "0";
+    }
+
+    public String getCounter() {
+        return Counter;
+    }
+
+    public void setCounter(String counter) {
+        Counter = counter;
     }
 
     public String getName() {
