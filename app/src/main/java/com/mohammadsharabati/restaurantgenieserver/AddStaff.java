@@ -31,7 +31,7 @@ import com.mohammadsharabati.restaurantgenieserver.Model.User;
 import com.mohammadsharabati.restaurantgenieserver.ViewHolder.StaffViewHolder;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-
+// add staff
 public class AddStaff extends AppCompatActivity {
 
     private FirebaseDatabase database;
