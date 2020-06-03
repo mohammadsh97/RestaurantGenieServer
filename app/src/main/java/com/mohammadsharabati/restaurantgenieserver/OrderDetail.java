@@ -36,11 +36,11 @@ public class OrderDetail extends AppCompatActivity {
 
         //Set Value
         order_id.setText(order_id_value);
-        order_phone.setText(Common.currentRequest.getPhone());
-        order_total.setText(Common.currentRequest.getTotal());
-        order_note.setText(Common.currentRequest.getNote());
+        order_phone.setText(Common.currentRequestWithKey.getPhone());
+        order_total.setText(Common.currentRequestWithKey.getTotal());
+        order_note.setText(Common.currentRequestWithKey.getNote());
 
-        OrderDetailAdapter adapter = new OrderDetailAdapter(Common.currentRequest.getFoods() , this);
+        OrderDetailAdapter adapter = new OrderDetailAdapter(Common.currentRequestWithKey.getFoods() , this);
         adapter.notifyDataSetChanged();
         lstFood.setAdapter(adapter);
 

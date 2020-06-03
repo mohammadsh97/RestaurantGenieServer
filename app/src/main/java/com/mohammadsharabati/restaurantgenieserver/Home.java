@@ -44,7 +44,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
 import io.paperdb.Paper;
-
 import android.view.Menu;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -242,7 +241,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return super.onOptionsItemSelected(item);
     }
 
-
     @SuppressWarnings("statmentWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -264,7 +262,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (id == R.id.nav_sign_out) {
             //Delete Remember user
             Paper.book().destroy();
-
+            Common.userManger = false;
             //Logout
             Intent signIn = new Intent(Home.this, MainActivity.class);
             signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -31,10 +31,13 @@ import com.mohammadsharabati.restaurantgenieserver.ViewHolder.StaffViewHolder;
 import com.mohammadsharabati.restaurantgenieserver.ViewHolder.TableViewHolder;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddTable extends AppCompatActivity {
 
     private FirebaseDatabase database;
-    private DatabaseReference Tables;
+    private DatabaseReference tables;
     private RecyclerView recycler_staff;
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseRecyclerOptions<User> options;
@@ -61,7 +64,7 @@ public class AddTable extends AppCompatActivity {
 
         //Init firebase
         database = FirebaseDatabase.getInstance();
-        Tables = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table");
+        tables = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table");
 
         // Click on Floating Action button to add new Staff
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_table);
@@ -78,13 +81,13 @@ public class AddTable extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         recycler_staff.setLayoutManager(mLayoutManager);
         loadTable();
-        
+
     }
 
     private void loadTable() {
 
         options = new FirebaseRecyclerOptions.Builder<User>()
-                .setQuery(Tables, User.class)
+                .setQuery(tables, User.class)
                 .build();
 
         adapter = new FirebaseRecyclerAdapter<User, TableViewHolder>(options) {
@@ -104,7 +107,7 @@ public class AddTable extends AppCompatActivity {
                 holder.btnRemoveTable.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        deleteStaff(adapter.getRef(position).getKey());
+                        deleteTable(adapter.getRef(position).getKey());
                     }
                 });
                 holder.setItemClickListener(new ItemClickListener() {
@@ -127,26 +130,13 @@ public class AddTable extends AppCompatActivity {
         recycler_staff.setAdapter(adapter);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapter != null)
-            adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (adapter != null)
-            adapter.stopListening();
-    }
-
     /**
-     * Adding new Staff
+     * Adding new Table
      */
-
     private void showDialog() {
+        List<String> listNameTable = new ArrayList<>();
+        List<String> listPhoneTable = new ArrayList<>();
+
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this, R.style.DialogTheme);
         alertDialog.setTitle("Add new Table");
         alertDialog.setMessage("Please fill full information");
@@ -163,56 +153,75 @@ public class AddTable extends AppCompatActivity {
         alertDialog.setView(add_table_layout);
         alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
 
+        tables.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    listNameTable.add(snapshot.getValue(User.class).getName());
+                    listPhoneTable.add(snapshot.getValue(User.class).getPhone());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         // event for button
         btnAddTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!edtUserName.getText().toString().isEmpty() && !edtPassword.getText().toString().isEmpty() && !edtPhoneNumber.getText().toString().trim().isEmpty()) {
+                    if (listNameTable.contains(edtUserName.getText().toString().trim())) {
+                        Toast.makeText(AddTable.this, "Your name is exist", Toast.LENGTH_SHORT).show();
+                    } else if (listPhoneTable.contains(edtPhoneNumber.getText().toString().trim())) {
+                        Toast.makeText(AddTable.this, "Your phone number is exist", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Int Firebase
+                        final FirebaseDatabase db = FirebaseDatabase.getInstance();
+                        final DatabaseReference table_user = db.getReference("RestaurantGenie");
 
-                    //Int Firebase
-                    final FirebaseDatabase db = FirebaseDatabase.getInstance();
-                    final DatabaseReference table_user = db.getReference("RestaurantGenie");
+                        final ProgressDialog mDialog = new ProgressDialog(AddTable.this);
+                        mDialog.setMessage("Please waiting...");
+                        mDialog.show();
 
-                    final ProgressDialog mDialog = new ProgressDialog(AddTable.this);
-                    mDialog.setMessage("Please waiting...");
-                    mDialog.show();
+                        table_user.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                mDialog.dismiss();
+                                for (DataSnapshot snapshot : dataSnapshot.child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table").getChildren()) {
 
-                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            mDialog.dismiss();
-                            for (DataSnapshot snapshot : dataSnapshot.child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table").getChildren()) {
+                                    User model = snapshot.getValue(User.class);
 
-                                User model = snapshot.getValue(User.class);
-
-                                // check Name and password for staff
-                                if (model.getName().equals(edtUserName.getText().toString().trim())) {
-                                    Toast.makeText(AddTable.this, "The username is already exist", Toast.LENGTH_SHORT).show();
-                                    flag_btnAddTable = false;
-                                    break;
+                                    // check Name and password for staff
+                                    if (model.getName().equals(edtUserName.getText().toString().trim())) {
+                                        Toast.makeText(AddTable.this, "The username is already exist", Toast.LENGTH_SHORT).show();
+                                        flag_btnAddTable = false;
+                                        break;
+                                    }
                                 }
+
+                                if (flag_btnAddTable == true) {
+                                    newTable = new User(Common.currentUser.getBusinessNumber(), ""
+                                            , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
+                                            , edtPassword.getText().toString());
+
+                                    if (newTable != null) {
+                                        tables.push().setValue(newTable);
+                                    }
+                                    Toast.makeText(AddTable.this, "The staff is added", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    flag_btnAddTable = true;
+                                }
+
                             }
 
-                            if (flag_btnAddTable == true) {
-                                newTable = new User(Common.currentUser.getBusinessNumber(), ""
-                                        , edtPhoneNumber.getText().toString(), edtUserName.getText().toString()
-                                        , edtPassword.getText().toString());
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                                if (newTable != null) {
-                                    Tables.push().setValue(newTable);
-                                }
-                                Toast.makeText(AddTable.this, "The staff is added", Toast.LENGTH_SHORT).show();
-                            } else {
-                                flag_btnAddTable = true;
                             }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                        });
+                    }
                 } else
                     Toast.makeText(AddTable.this, "You must enter user name and password", Toast.LENGTH_SHORT).show();
             }
@@ -227,15 +236,6 @@ public class AddTable extends AppCompatActivity {
         });
         flag_btnAddTable = true;
         alertDialog.show();
-    }
-
-    /**
-     * Adding delet Staff
-     */
-    private void deleteStaff(String key) {
-        Tables.child(key).removeValue();
-        adapter.notifyDataSetChanged();
-
     }
 
     private void showUpdateDialog(String key, final User user) {
@@ -270,11 +270,10 @@ public class AddTable extends AppCompatActivity {
                             , edtPassword.getText().toString());
 
                     if (newTable != null) {
-                        Tables.child(localKey).setValue(newTable);
+                        tables.child(localKey).setValue(newTable);
                     }
                     Toast.makeText(AddTable.this, "The staff is Updated", Toast.LENGTH_SHORT).show();
-                }
-                else
+                } else
                     Toast.makeText(AddTable.this, "You must enter user name and password", Toast.LENGTH_SHORT).show();
 
                 adapter.notifyDataSetChanged(); //Add to update item all
@@ -290,9 +289,27 @@ public class AddTable extends AppCompatActivity {
         alertDialog.show();
     }
 
+    /**
+     * Adding delet Table
+     */
+    private void deleteTable(String key) {
+        tables.child(key).removeValue();
+        adapter.notifyDataSetChanged();
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
+    }
 
-
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null)
+            adapter.stopListening();
+    }
 }

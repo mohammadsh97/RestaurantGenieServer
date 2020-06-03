@@ -139,7 +139,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="4">
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/btnAddTable"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Add table"
+                app:fButtonColor="@android:color/white"
+                fbutton:cornerRadius="0dp" />
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/btnDetail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="details"
+                app:fButtonColor="@android:color/white"
+                fbutton:cornerRadius="0dp"/>
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnEdit"

@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -134,20 +133,6 @@ public class FoodList extends AppCompatActivity {
         };
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapter != null)
-            adapter.startListening();
     }
 
     /**
@@ -416,7 +401,20 @@ public class FoodList extends AppCompatActivity {
 
     private void deleteFood(String key) {
         foodList.child(key).removeValue();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
     }
 
 }

@@ -15,7 +15,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         View.OnClickListener,
         View.OnCreateContextMenuListener {
 
-    public TextView txtOrderId,txtOrderDate, txtOrderStatus, txtOrderPhone, txtOrderNote;
+    public TextView txtOrderId,txtOrderDate, txtOrderStatus, txtOrderPhone, txtOrderNote , txtTableName;
 
     public Button btnEdit, btnRemove, btnDetail;
 
@@ -29,7 +29,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         txtOrderId = (TextView) itemView.findViewById(R.id.order_id);
         txtOrderStatus = (TextView) itemView.findViewById(R.id.order_status);
         txtOrderPhone = (TextView) itemView.findViewById(R.id.order_phone);
-
+        txtTableName = itemView.findViewById(R.id.tableName);
         btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
         btnRemove = (Button) itemView.findViewById(R.id.btnRemove);
         btnDetail = (Button) itemView.findViewById(R.id.btnDetail);

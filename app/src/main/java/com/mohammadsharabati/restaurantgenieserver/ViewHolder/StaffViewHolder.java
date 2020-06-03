@@ -16,7 +16,7 @@ public class StaffViewHolder  extends RecyclerView.ViewHolder implements
         View.OnClickListener, View.OnCreateContextMenuListener  {
 
     public TextView user_name_staff ,password_staff , phone_number_staff,email_staff ;
-    public Button btnEdit, btnRemove;
+    public Button btnEdit, btnRemove , btnAddTable,btnDetail;
 
     private ItemClickListener itemClickListener;
 
@@ -31,6 +31,8 @@ public class StaffViewHolder  extends RecyclerView.ViewHolder implements
 
         btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
         btnRemove = (Button) itemView.findViewById(R.id.btnRemove);
+        btnAddTable = itemView.findViewById(R.id.btnAddTable);
+        btnDetail = itemView.findViewById(R.id.btnDetail);
 
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);

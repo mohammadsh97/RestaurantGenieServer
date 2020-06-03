@@ -19,8 +19,6 @@ import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.Food;
 import java.util.ArrayList;
 
-
-
 public class Chart extends AppCompatActivity {
 
     private BarChart barChart;

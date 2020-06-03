@@ -16,7 +16,7 @@ import com.mohammadsharabati.restaurantgenieserver.R;
 public class NotificationHelper extends ContextWrapper {
 
     private static final String MOHAMMAD_CHANNEL_ID = "com.mohammadsharabati.restaurantgenieserver.Mohammad";
-    private static final String MOHAMMAD_CHANNEL_NAME = "RestaurantGenie";
+    private static final String MOHAMMAD_CHANNEL_NAME = "Restaurant Genie";
 
     private NotificationManager manager;
 

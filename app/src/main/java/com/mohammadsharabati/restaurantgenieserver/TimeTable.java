@@ -3,12 +3,10 @@ package com.mohammadsharabati.restaurantgenieserver;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-
 import com.google.android.material.tabs.TabLayout;
 import com.mohammadsharabati.restaurantgenieserver.Adapter.PagerAdapter;
 import com.mohammadsharabati.restaurantgenieserver.Fragment.DayFragment;
 import com.mohammadsharabati.restaurantgenieserver.Model.TabDays;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
@@ -76,13 +74,7 @@ public class TimeTable extends AppCompatActivity {
         onBackPressed();
         return true;
     }
-
 }
-
-
-
-
-
 
 
 

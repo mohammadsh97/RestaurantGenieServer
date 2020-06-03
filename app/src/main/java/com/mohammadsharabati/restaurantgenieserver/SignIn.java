@@ -1,13 +1,10 @@
 package com.mohammadsharabati.restaurantgenieserver;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import io.paperdb.Paper;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -95,7 +92,6 @@ public class SignIn extends AppCompatActivity {
 
                     for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Staff").getChildren()) {
                         User model = snapshot.getValue(User.class);
-                        Log.v("MyTAG", "mohammad" + model.getBusinessNumber());
 
                         // check Name and password for staff
                         if (model.getName().equals(Name) && model.getPassword().equals(password)) {
@@ -110,18 +106,16 @@ public class SignIn extends AppCompatActivity {
                             }
 
                             Common.currentUser = model;
+                            Common.keyUser = snapshot.getKey();
+
                             Intent OrderStatusIntent = new Intent(SignIn.this, OrderStatus.class);
                             startActivity(OrderStatusIntent);
                             finish();
-
-                            Toast.makeText(SignIn.this, "Im " + Name, Toast.LENGTH_SHORT).show();
-
                         }
                     }
 
                     for (DataSnapshot snapshot : dataSnapshot.child(BusinessNumber).child("Worker").child("Manger").getChildren()) {
                         User model = snapshot.getValue(User.class);
-                        Log.v("MyTAG", "mohammad" + model.getBusinessNumber());
 
                         // check Name and password for staff
                         if (model.getName().equals(Name) && model.getPassword().equals(password)) {
@@ -133,6 +127,9 @@ public class SignIn extends AppCompatActivity {
                                 Paper.book().write(Common.PWD_KEY, edtPassword.getText().toString());
                             }
                             Common.currentUser = model;
+                            Common.keyUser = snapshot.getKey();
+                            Common.userManger = true;
+
                             Intent HomeIntent = new Intent(SignIn.this, Home.class);
                             startActivity(HomeIntent);
                             finish();

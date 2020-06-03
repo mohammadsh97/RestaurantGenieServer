@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void login(final String BusinessNumber, final String Name, final String password) {
         if (Common.isConnectedToInternet(getBaseContext())) {
-
-
             if (BusinessNumber.trim().length() != 0)
                 signInUser(BusinessNumber, Name, password);
             else
@@ -71,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Please check your network connection", Toast.LENGTH_SHORT).show();
             return;
         }
-
     }
 
     private void signInUser(final String BusinessNumber, final String Name, final String password) {
@@ -97,11 +94,10 @@ public class MainActivity extends AppCompatActivity {
                         if (model.getName().equals(Name) && model.getPassword().equals(password)) {
                             // Login ok
                             Common.currentUser = model;
+                            Common.keyUser = snapshot.getKey();
                             Intent OrderStatusIntent = new Intent(MainActivity.this, OrderStatus.class);
                             startActivity(OrderStatusIntent);
                             finish();
-
-                            Toast.makeText(MainActivity.this, "Im " + Name, Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -110,10 +106,11 @@ public class MainActivity extends AppCompatActivity {
                         // check Name and password for staff
                         if (model.getName().equals(Name) && model.getPassword().equals(password)) {
                             Common.currentUser = model;
+                            Common.keyUser = snapshot.getKey();
+                            Common.userManger = true;
                             Intent HomeIntent = new Intent(MainActivity.this, Home.class);
                             startActivity(HomeIntent);
                             finish();
-
                         }
                     }
 
