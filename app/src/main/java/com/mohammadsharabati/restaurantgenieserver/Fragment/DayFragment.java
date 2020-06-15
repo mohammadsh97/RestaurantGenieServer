@@ -2,30 +2,21 @@ package com.mohammadsharabati.restaurantgenieserver.Fragment;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mohammadsharabati.restaurantgenieserver.Adapter.TimeWorkerAdapter;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
-import com.mohammadsharabati.restaurantgenieserver.FoodList;
-import com.mohammadsharabati.restaurantgenieserver.Home;
-import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.TimeWorker;
 import com.mohammadsharabati.restaurantgenieserver.R;
-import com.mohammadsharabati.restaurantgenieserver.TimeTable;
-import com.mohammadsharabati.restaurantgenieserver.ViewHolder.TimeWorkerViewHolder;
+
 import java.util.ArrayList;
 import java.util.List;
 import androidx.annotation.NonNull;
@@ -40,11 +31,14 @@ public class DayFragment extends Fragment {
     //    private View containerView;
     //My Added
     private RecyclerView recycler_fragment_day;
-    private FirebaseRecyclerOptions<TimeWorker> options;
-    private FirebaseRecyclerAdapter<TimeWorker, TimeWorkerViewHolder> adapterFirebase;
+//    private FirebaseRecyclerOptions<TimeWorker> options;
+//    private FirebaseRecyclerAdapter<TimeWorker, StaffTimeWorkerItemViewHolder> adapterFirebase;
+    TimeWorkerAdapter adapter;
+    List<TimeWorker> timeWorkerList = new ArrayList<>();
     private FirebaseDatabase database;
     private DatabaseReference days;
     private Activity mActivity;
+
 
 
     public DayFragment() {
@@ -87,10 +81,10 @@ public class DayFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_day, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_days, container, false);
 
         recycler_fragment_day = rootView.findViewById(R.id.recycler_fragment_day);
-//        recycler_fragment_day.setHasFixedSize(false);
+//        recycler_fragment_day.setHasFixedSize(true);
 
         //Init firebase
         database = FirebaseDatabase.getInstance();
@@ -128,26 +122,44 @@ public class DayFragment extends Fragment {
 
         recycler_fragment_day.setLayoutManager(mManager);
 
-        // keyQuery - the Firebase location containing the list of keys to be found in dataRef
-        Log.v("TAGDAYS", ">>>>> days is: " + days.child("01"));
-//        days = days.child("01");
-
-
-        options = new FirebaseRecyclerOptions.Builder<TimeWorker>()
-                .setQuery(days, TimeWorker.class)
-                .build();
-
-
-
-        adapterFirebase = new FirebaseRecyclerAdapter<TimeWorker, TimeWorkerViewHolder>(options) {
-
+        days.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.v("TAG", ">>>>> snapshot: " + snapshot.getValue(TimeWorker.class).getName());
+                    timeWorkerList.add(snapshot.getValue(TimeWorker.class));
+                }
+                adapter = new TimeWorkerAdapter(timeWorkerList);
+                adapter.notifyDataSetChanged();
+                recycler_fragment_day.setAdapter(adapter);
+            }
 
             @Override
-            protected void onBindViewHolder(@NonNull final TimeWorkerViewHolder holder, int position, @NonNull final TimeWorker model) {
-                Log.v("TAG", ">>>>> options:");
-                holder.name.setText(model.getName());
-                holder.startTime.setText(model.getStartTime());
-                holder.endTime.setText(model.getEndTime());
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // keyQuery - the Firebase location containing the list of keys to be found in dataRef
+//        Log.v("TAGDAYS", ">>>>> days is: " + days.child("01"));
+//        days = days.child("01");
+//
+//
+//        options = new FirebaseRecyclerOptions.Builder<TimeWorker>()
+//                .setQuery(days, TimeWorker.class)
+//                .build();
+//
+//
+//
+//        adapterFirebase = new FirebaseRecyclerAdapter<TimeWorker, StaffTimeWorkerItemViewHolder>(options) {
+//
+//
+//            @Override
+//            protected void onBindViewHolder(@NonNull final StaffTimeWorkerItemViewHolder holder, int position, @NonNull final TimeWorker model) {
+//                Log.v("TAG", ">>>>> options:");
+//                holder.name.setText(model.getName());
+//                holder.startTime.setText(model.getStartTime());
+//                holder.endTime.setText(model.getEndTime());
 //                    days.addListenerForSingleValueEvent(new ValueEventListener() {
 //                        List<TimeWorker> timeWorkerList = new ArrayList<>();
 //
@@ -172,21 +184,21 @@ public class DayFragment extends Fragment {
 //
 //                        }
 //                    });
-            }
+//            }
+//
+//            @NonNull
+//            @Override
+//            public StaffTimeWorkerItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//                View view = LayoutInflater.from(parent.getContext())
+//                        .inflate(R.layout.staff_time_table_item, parent, false);
+//                return new StaffTimeWorkerItemViewHolder(view);
+//            }
+//        };
 
-            @NonNull
-            @Override
-            public TimeWorkerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.day_item, parent, false);
-                return new TimeWorkerViewHolder(view);
-            }
-        };
 
-
-        adapterFirebase.startListening();
-        adapterFirebase.notifyDataSetChanged(); // Refresh data if have data changed
-        recycler_fragment_day.setAdapter(adapterFirebase);
+//        adapterFirebase.startListening();
+//        adapterFirebase.notifyDataSetChanged(); // Refresh data if have data changed
+//        recycler_fragment_day.setAdapter(adapterFirebase);
 
 
         return rootView;
@@ -200,21 +212,21 @@ public class DayFragment extends Fragment {
 //            adapterFirebase.startListening();
 //        }
 //    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapterFirebase != null) {
-            adapterFirebase.startListening();
-            Log.v("TAG","onResume");
-        }
-    }
 //
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (adapterFirebase != null)
-            adapterFirebase.stopListening();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        //Fix click back on FoodDetail and get no item in FoodList
+//        if (adapterFirebase != null) {
+//            adapterFirebase.startListening();
+//            Log.v("TAG","onResume");
+//        }
+//    }
+////
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        if (adapterFirebase != null)
+//            adapterFirebase.stopListening();
+//    }
 }

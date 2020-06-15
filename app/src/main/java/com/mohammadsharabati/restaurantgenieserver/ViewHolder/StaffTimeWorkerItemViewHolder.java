@@ -9,7 +9,7 @@ import com.mohammadsharabati.restaurantgenieserver.R;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class TimeWorkerViewHolder extends RecyclerView.ViewHolder implements
+public class StaffTimeWorkerItemViewHolder extends RecyclerView.ViewHolder implements
         View.OnClickListener, View.OnCreateContextMenuListener {
 
     public TextView name;
@@ -17,7 +17,7 @@ public class TimeWorkerViewHolder extends RecyclerView.ViewHolder implements
     public TextView endTime;
     private ItemClickListener itemClickListener;
 
-    public TimeWorkerViewHolder(@NonNull View itemView) {
+    public StaffTimeWorkerItemViewHolder(@NonNull View itemView) {
         super(itemView);
 
         name = itemView.findViewById(R.id.nameWorker);
