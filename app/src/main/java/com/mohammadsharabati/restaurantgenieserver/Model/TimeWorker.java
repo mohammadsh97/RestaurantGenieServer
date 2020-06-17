@@ -2,16 +2,17 @@ package com.mohammadsharabati.restaurantgenieserver.Model;
 
 public class TimeWorker {
 
-    private String name , startTime , endTime;
+    private String name , startTime , endTime ,dayId;
 
     public TimeWorker() {
 
     }
 
-    public TimeWorker(String name, String startTime, String endTime) {
+    public TimeWorker(String name, String startTime, String endTime, String dayId) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.dayId = dayId;
     }
 
     public String getName() {
@@ -38,10 +39,11 @@ public class TimeWorker {
         this.endTime = endTime;
     }
 
-//    public int getLength() {
-//        if (Integer.parseInt(endTime) != 0 && Integer.parseInt(startTime) != 0)
-//            return Integer.parseInt(endTime) - Integer.parseInt(startTime);
-//
-//        return 0;
-//    }
+    public String getDayId() {
+        return dayId;
+    }
+
+    public void setDayId(String dayId) {
+        this.dayId = dayId;
+    }
 }
