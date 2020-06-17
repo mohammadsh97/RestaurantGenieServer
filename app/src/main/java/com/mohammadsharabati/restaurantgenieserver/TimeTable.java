@@ -1,5 +1,6 @@
 package com.mohammadsharabati.restaurantgenieserver;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,8 +39,6 @@ public class TimeTable extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Time Table");
 
-
-
         //Init firebase
         database = FirebaseDatabase.getInstance();
         weeks = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Week");
@@ -49,7 +48,6 @@ public class TimeTable extends AppCompatActivity {
         recycler_menu.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(mLayoutManager);
-
         loadWeek();
     }
 
@@ -64,17 +62,17 @@ public class TimeTable extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<Day, WeekTableViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull WeekTableViewHolder holder, int i, @NonNull Day model) {
-                                Log.v("Days" , ""+model.getName());
                 holder.tvWeek.setText(model.getName());
                 holder.ivLetter.setOval(true);
                 holder.ivLetter.setLetter(model.getName().charAt(0));
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-//                        // send categoryId and start new activity
-//                        Intent foodList = new Intent(TimeTable.this, FoodList.class);
-//                        foodList.putExtra("DayId", adapter.getRef(position).getKey());
-//                        startActivity(foodList);
+                        // send categoryId and start new activity
+                        Intent workSchedule = new Intent(TimeTable.this, WorkSchedule.class);
+                        Log.v("msm" , ""+adapter.getRef(position).getKey());
+                        workSchedule.putExtra("DayId", adapter.getRef(position).getKey());
+                        startActivity(workSchedule);
                     }
                 });
             }
@@ -87,12 +85,9 @@ public class TimeTable extends AppCompatActivity {
                 return new WeekTableViewHolder(view);
             }
         };
-
         adapter.startListening();
         adapter.notifyDataSetChanged(); // Refresh data if have data changed
         recycler_menu.setAdapter(adapter);
-
-
     }
 
     @Override
