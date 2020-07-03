@@ -47,7 +47,7 @@ public class OrderStatus extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private Button btnSignOut;
     private FirebaseDatabase database;
-    private DatabaseReference requests, addTables , tables;
+    private DatabaseReference requests, addTables, tables;
     private MaterialSpinner spinner;
     private APIService mService;
     private List<RequestWithKey> listOfSpecialRequest = new ArrayList<>();
@@ -67,18 +67,21 @@ public class OrderStatus extends AppCompatActivity {
         tables = database.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Worker").child("Table");
 
         btnSignOut = findViewById(R.id.btnSignOut);
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Delete Remember user
-                Paper.book().destroy();
+        if (Common.userManger) {
+            btnSignOut.setVisibility(View.GONE);
+        } else
+            btnSignOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Delete Remember user
+                    Paper.book().destroy();
 
-                //Logout
-                Intent signIn = new Intent(OrderStatus.this, MainActivity.class);
-                signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(signIn);
-            }
-        });
+                    //Logout
+                    Intent signIn = new Intent(OrderStatus.this, MainActivity.class);
+                    signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(signIn);
+                }
+            });
 
         //Init
         recyclerView = (RecyclerView) findViewById(R.id.recyclerOrders);

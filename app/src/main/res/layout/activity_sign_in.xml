@@ -81,14 +81,6 @@
                 android:text="Remember me"
                 android:textColor="@android:color/white" />
 
-            <com.rey.material.widget.TextView
-                android:id="@+id/txtForgotPwd"
-                android:textColor="@android:color/white"
-                android:text="@string/forgot_pwd"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-
         </LinearLayout>
     </LinearLayout>
 

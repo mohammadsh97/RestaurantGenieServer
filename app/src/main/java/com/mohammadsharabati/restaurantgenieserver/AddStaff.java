@@ -88,6 +88,9 @@ public class AddStaff extends AppCompatActivity {
 
     }
 
+    /**
+     * load List of Staff
+     */
     private void loadStaff() {
         options = new FirebaseRecyclerOptions.Builder<User>()
                 .setQuery(staffs, User.class)
@@ -153,21 +156,6 @@ public class AddStaff extends AppCompatActivity {
         recycler_staff.setAdapter(adapter);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Fix click back on FoodDetail and get no item in FoodList
-        if (adapter != null)
-            adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (adapter != null)
-            adapter.stopListening();
-    }
-
     /**
      * Adding new Staff
      */
@@ -175,7 +163,8 @@ public class AddStaff extends AppCompatActivity {
         List<String> listNameStaff = new ArrayList<>();
         List<String> listPhoneStaff = new ArrayList<>();
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this);
         alertDialog.setTitle("Add new Staff");
         alertDialog.setMessage("Please fill full information");
 
@@ -277,15 +266,17 @@ public class AddStaff extends AppCompatActivity {
         flag_btnAddStaff = true;
         alertDialog.show();
     }
-
+    /**
+     * Adding Staff for staff
+     */
     private void showAddTableDialog(String key) {
         List<String> tableIsExist = new ArrayList<>();
         Query tableExistInStaff = addTables.orderByChild("staffId").equalTo(key);
         ArrayList<String> listNameOfTable = new ArrayList<String>();
         ArrayList<String> listNumberPhoneOfTable = new ArrayList<String>();
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this);
-        alertDialog.setTitle("Add table");
-        alertDialog.setMessage("Please Choose Table");
+        alertDialog.setTitle("Add Table");
+        alertDialog.setMessage("Please Choose Staff");
 
         LayoutInflater inflater = this.getLayoutInflater();
         View add_table_for_staff_layout = inflater.inflate(R.layout.add_table_for_staff_layout, null);
@@ -350,6 +341,9 @@ public class AddStaff extends AppCompatActivity {
 
     }
 
+    /**
+     * Edit information for Staff
+     */
     private void showUpdateDialog(String key, final User user) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddStaff.this);
         alertDialog.setTitle("Update Staff");
@@ -406,11 +400,26 @@ public class AddStaff extends AppCompatActivity {
     }
 
     /**
-     * Adding delet Staff
+     * Adding delete Staff
      */
     private void deleteStaff(String key) {
         staffs.child(key).removeValue();
         adapter.notifyDataSetChanged();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no item in FoodList
+        if (adapter != null)
+            adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null)
+            adapter.stopListening();
     }
 }

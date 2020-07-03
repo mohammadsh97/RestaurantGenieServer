@@ -137,7 +137,8 @@ public class AddTable extends AppCompatActivity {
         List<String> listNameTable = new ArrayList<>();
         List<String> listPhoneTable = new ArrayList<>();
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(AddTable.this);
         alertDialog.setTitle("Add new Table");
         alertDialog.setMessage("Please fill full information");
 

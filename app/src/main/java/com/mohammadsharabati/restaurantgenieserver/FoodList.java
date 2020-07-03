@@ -224,7 +224,8 @@ public class FoodList extends AppCompatActivity {
      * Showing dialog to add new food
      */
     private void showAddFoodDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this);
         alertDialog.setTitle("Add new Food");
         alertDialog.setMessage("Please fill full information");
 
@@ -288,7 +289,8 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void showUpdateFoodDialog(final String key, final Food item) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FoodList.this);
         alertDialog.setTitle("Edit Food");
         alertDialog.setMessage("Please fill full information");
 

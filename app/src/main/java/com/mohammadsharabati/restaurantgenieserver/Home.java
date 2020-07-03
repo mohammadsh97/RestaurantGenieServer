@@ -378,7 +378,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
      */
 
     private void showDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
         alertDialog.setTitle("Add new Category");
         alertDialog.setMessage("Please fill full information");
 
@@ -444,7 +445,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
      */
     private void showUpdateDialog(final String key, final Category item) {
         // set title and message
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
         alertDialog.setTitle("Update Category");
         alertDialog.setMessage("Please fill full information");
 

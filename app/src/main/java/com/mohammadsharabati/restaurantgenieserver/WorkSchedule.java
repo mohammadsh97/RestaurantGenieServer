@@ -81,6 +81,9 @@ public class WorkSchedule extends AppCompatActivity {
             loadListWorkSchedule(DayId);
     }
 
+    /**
+     * load List Work Schedule
+     */
     private void loadListWorkSchedule(String dayId) {
 
         Query loadListWorkScheduleId = days.orderByChild("dayId").equalTo(dayId);
@@ -115,6 +118,9 @@ public class WorkSchedule extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * UPDATE/ DELETE
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getTitle().equals(Common.UPDATE)) {
@@ -125,9 +131,12 @@ public class WorkSchedule extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
-
+    /**
+     * show dialog Update Work Schedule
+     */
     private void showUpdateWorkSchedule(String key, TimeWorker item) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this, R.style.DialogTheme);
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this);
         alertDialog.setTitle("Edit Work Schedule");
         alertDialog.setMessage("Please fill full information");
 
@@ -193,8 +202,9 @@ public class WorkSchedule extends AppCompatActivity {
      * Adding new Work Schedule
      */
     private void showDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this, R.style.DialogTheme);
-        alertDialog.setTitle("Add new Schedule");
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this, R.style.DialogTheme);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(WorkSchedule.this);
+        alertDialog.setTitle("Add to Schedule");
         alertDialog.setMessage("Please fill full information");
 
         LayoutInflater inflater = this.getLayoutInflater();
@@ -258,6 +268,9 @@ public class WorkSchedule extends AppCompatActivity {
         alertDialog.show();
     }
 
+    /**
+     * Create android time dialog
+     */
     private void showTimeDialog(final EditText time_in) {
         final Calendar calendar=Calendar.getInstance();
 

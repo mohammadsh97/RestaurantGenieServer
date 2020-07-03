@@ -32,6 +32,9 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements
         txtTableName = itemView.findViewById(R.id.tableName);
         btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
         btnRemove = (Button) itemView.findViewById(R.id.btnRemove);
+        if (!Common.userManger){
+            btnRemove.setVisibility(View.GONE);
+        }
         btnDetail = (Button) itemView.findViewById(R.id.btnDetail);
 
         itemView.setOnClickListener(this);
