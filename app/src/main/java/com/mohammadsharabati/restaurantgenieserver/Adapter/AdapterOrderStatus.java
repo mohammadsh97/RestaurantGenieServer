@@ -37,12 +37,12 @@ import retrofit2.Response;
 
 public class AdapterOrderStatus extends RecyclerView.Adapter<OrderViewHolder> {
 
-    private List<RequestWithKey> list;
+    public List<RequestWithKey> list;
     private Context context;
     private MaterialSpinner spinner;
     private FirebaseDatabase database;
     private DatabaseReference requests;
-    APIService mService;
+    private APIService mService;
 
     public AdapterOrderStatus(List<RequestWithKey> list, Context context) {
         this.list = list;
@@ -54,6 +54,8 @@ public class AdapterOrderStatus extends RecyclerView.Adapter<OrderViewHolder> {
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.order_layout, parent, false);
+
+        mService = Common.getFCMService();
 
         return new OrderViewHolder(itemView);
     }
@@ -98,6 +100,7 @@ public class AdapterOrderStatus extends RecyclerView.Adapter<OrderViewHolder> {
                         dialog.dismiss();
                         list.get(position).setStatus(String.valueOf(spinner.getSelectedIndex()));
                         requests.child(localKey).setValue(list.get(position));
+                        Log.v("errorrrr" , ""+list.get(position).getName());
                         sendOrderStatusToUser(list.get(position));
                     }
                 });
