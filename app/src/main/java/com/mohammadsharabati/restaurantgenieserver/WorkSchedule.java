@@ -35,7 +35,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class WorkSchedule extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -101,6 +103,16 @@ public class WorkSchedule extends AppCompatActivity {
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
+                    }
+
+                    @Override
+                    public void onRemove(View view, int position, boolean isLongClick) {
+
+                    }
+
+                    @Override
+                    public void onDetail(int position) {
+
                     }
                 });
             }

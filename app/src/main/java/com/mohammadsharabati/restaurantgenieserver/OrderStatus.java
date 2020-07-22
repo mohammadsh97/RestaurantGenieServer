@@ -8,6 +8,7 @@ import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,12 +22,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.mohammadsharabati.restaurantgenieserver.Adapter.AdapterOrderStatus;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
+import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.DataMessage;
 import com.mohammadsharabati.restaurantgenieserver.Model.MyResponse;
 import com.mohammadsharabati.restaurantgenieserver.Model.Request;
@@ -34,13 +36,15 @@ import com.mohammadsharabati.restaurantgenieserver.Model.RequestWithKey;
 import com.mohammadsharabati.restaurantgenieserver.Model.Table;
 import com.mohammadsharabati.restaurantgenieserver.Model.Token;
 import com.mohammadsharabati.restaurantgenieserver.Remote.APIService;
-import com.mohammadsharabati.restaurantgenieserver.ViewHolder.OrderViewHolder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderStatus extends AppCompatActivity {
+/**
+ * Created by Mohammad Sharabati.
+ */
+public class OrderStatus extends AppCompatActivity implements ItemClickListener {
 
 
     private RecyclerView recyclerView;
@@ -51,12 +55,15 @@ public class OrderStatus extends AppCompatActivity {
     private MaterialSpinner spinner;
     private APIService mService;
     private List<RequestWithKey> listOfSpecialRequest = new ArrayList<>();
-    RecyclerView.Adapter<OrderViewHolder> adapter;
+    private AdapterOrderStatus adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_status);
+
+        if (!Common.userManger)
+            updateToken(FirebaseInstanceId.getInstance().getToken());
 
         mService = Common.getFCMService();
 
@@ -89,74 +96,114 @@ public class OrderStatus extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
+        adapter = new AdapterOrderStatus(listOfSpecialRequest);
+        adapter.setItemClickListener(this);
+        recyclerView.setAdapter(adapter);
+
         loadOrders();
+//        updateToken(FirebaseInstanceId.getInstance().getToken());
+
     }
 
     /**
      * Loading order status
      */
     private void loadOrders() {
-
         List<String> listPhoneNumber = new ArrayList<>();
+
         if (Common.userManger == true) {
 
-            tables.addListenerForSingleValueEvent(new ValueEventListener() {
+            tables.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
+                    listPhoneNumber.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         listPhoneNumber.add(snapshot.getValue(Table.class).getPhone());
                     }
+
+                    requests.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            listOfSpecialRequest.clear();
+                            for (int i = 0; i < listPhoneNumber.size(); i++) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    Request model = snapshot.getValue(Request.class);
+
+                                    RequestWithKey modelWithKey = new RequestWithKey(model.getPhone(), model.getName(), model.getNote(), model.getTotal(),
+                                            model.getStatus(), model.getFoods(), snapshot.getRef().getKey());
+
+                                    if (model.getPhone().equals(listPhoneNumber.get(i))) {
+                                        listOfSpecialRequest.add(modelWithKey);
+                                    }
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
 
         } else {
-            Query phoneNumberOfTables = addTables.orderByChild("staffId").equalTo(Common.keyUser);
 
-            phoneNumberOfTables.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            addTables.orderByChild("staffId").equalTo(Common.keyUser).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
+                    listPhoneNumber.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         listPhoneNumber.add(snapshot.getValue(Table.class).getPhone());
                     }
-                }
 
+                    requests.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            listOfSpecialRequest.clear();
+                            for (int i = 0; i < listPhoneNumber.size(); i++) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    Request model = snapshot.getValue(Request.class);
+
+                                    RequestWithKey modelWithKey = new RequestWithKey(model.getPhone(), model.getName(), model.getNote(), model.getTotal(),
+                                            model.getStatus(), model.getFoods(), snapshot.getRef().getKey());
+
+                                    if (model.getPhone().equals(listPhoneNumber.get(i))) {
+                                        listOfSpecialRequest.add(modelWithKey);
+                                    }
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+                }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
             });
         }
-        requests.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (int i = 0; i < listPhoneNumber.size(); i++) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Request model = snapshot.getValue(Request.class);
 
-                        RequestWithKey modelWithKey = new RequestWithKey(model.getPhone(), model.getName(), model.getNote(), model.getTotal(),
-                                model.getStatus(), model.getFoods(), snapshot.getRef().getKey());
+    }
+    private void updateToken(String token) {
 
-                        if (model.getPhone().equals(listPhoneNumber.get(i))) {
-                            listOfSpecialRequest.add(modelWithKey);
-                        }
-                    }
-                }
-                adapter = new AdapterOrderStatus(listOfSpecialRequest, getBaseContext());
-                recyclerView.setAdapter(adapter);
-            }
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        DatabaseReference tokens = db.getReference().child("RestaurantGenie").child(Common.currentUser.getBusinessNumber()).child("Tokens");
 
-            }
-        });
+        Token data = new Token(token, true); // true because this token send from Server app
+
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
 
     }
 
@@ -257,5 +304,55 @@ public class OrderStatus extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    @Override
+    public void onClick(View view, int position, boolean isLongClick) {
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(OrderStatus.this);
+
+        alertDialog.setTitle("Update Order");
+        alertDialog.setMessage("Please Choose Status");
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View update_order_layout = inflater.inflate(R.layout.update_order_layout, null);
+
+        spinner = (MaterialSpinner) update_order_layout.findViewById(R.id.statusSpinner);
+        spinner.setItems("Placed","Processing","Ready, On the way to you");
+
+        alertDialog.setView(update_order_layout);
+
+        final String localKey = listOfSpecialRequest.get(position).getKey();
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                listOfSpecialRequest.get(position).setStatus(String.valueOf(spinner.getSelectedIndex()));
+                requests.child(localKey).setValue(listOfSpecialRequest.get(position));
+                sendOrderStatusToUser(listOfSpecialRequest.get(position));
+            }
+        });
+
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+    @Override
+    public void onRemove(View view, int position, boolean isLongClick) {
+        requests.child(listOfSpecialRequest.get(position).getKey()).removeValue();
+    }
+
+    @Override
+    public void onDetail(int position) {
+        Intent orderDetailIntent = new Intent(OrderStatus.this , OrderDetail.class);
+        Common.currentRequestWithKey = listOfSpecialRequest.get(position);
+        orderDetailIntent.putExtra("OrderId", listOfSpecialRequest.get(position).getKey());
+        orderDetailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(orderDetailIntent);
     }
 }

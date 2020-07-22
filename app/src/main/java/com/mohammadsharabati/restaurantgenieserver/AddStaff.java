@@ -33,7 +33,9 @@ import com.mohammadsharabati.restaurantgenieserver.ViewHolder.StaffViewHolder;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class AddStaff extends AppCompatActivity {
 
     private FirebaseDatabase database;
@@ -132,15 +134,24 @@ public class AddStaff extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         deleteStaff(adapter.getRef(position).getKey());
+                        loadStaff();
                     }
                 });
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
                     }
+
+                    @Override
+                    public void onRemove(View view, int position, boolean isLongClick) {
+
+                    }
+
+                    @Override
+                    public void onDetail(int position) {
+
+                    }
                 });
-
-
             }
 
             @NonNull

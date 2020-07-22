@@ -39,7 +39,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import info.hoang8f.widget.FButton;
 
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class FoodList extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -106,7 +108,6 @@ public class FoodList extends AppCompatActivity {
         FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(listFoodByCategoryId, Food.class)
                 .build();
-
         adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull FoodViewHolder holder, int position, @NonNull Food model) {
@@ -119,6 +120,16 @@ public class FoodList extends AppCompatActivity {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
                         //Later
+                    }
+
+                    @Override
+                    public void onRemove(View view, int position, boolean isLongClick) {
+                        //Later
+                    }
+
+                    @Override
+                    public void onDetail(int position) {
+
                     }
                 });
             }
