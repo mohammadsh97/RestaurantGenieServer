@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.ViewHolder.OrderDetailAdapter;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class OrderDetail extends AppCompatActivity {
     private TextView order_id, order_phone, order_note, order_total;
     private String order_id_value = "";

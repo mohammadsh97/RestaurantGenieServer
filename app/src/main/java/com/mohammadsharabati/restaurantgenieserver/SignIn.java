@@ -17,7 +17,9 @@ import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.widget.CheckBox;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class SignIn extends AppCompatActivity {
 
     private MaterialEditText edtBusinessNumber, edtName, edtPassword;
@@ -82,7 +84,7 @@ public class SignIn extends AppCompatActivity {
         mDialog.setMessage("Please waiting...");
         mDialog.show();
 
-        users.addValueEventListener(new ValueEventListener() {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

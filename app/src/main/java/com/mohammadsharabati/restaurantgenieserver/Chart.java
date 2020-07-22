@@ -18,7 +18,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.Food;
 import java.util.ArrayList;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class Chart extends AppCompatActivity {
 
     private BarChart barChart;
@@ -58,7 +60,9 @@ public class Chart extends AppCompatActivity {
                 BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Food Sales");
                 barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                 Description description = new Description();
-                description.setText("Foods");
+                description.setText("X-Axis: Name of Food, Y-Axis: Food Sales");
+                description.setTextSize(15);
+
                 barChart.setDescription(description);
 
                 BarData barData = new BarData(barDataSet);

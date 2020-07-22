@@ -19,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class TimeTable extends AppCompatActivity {
 
     private FirebaseDatabase database;
@@ -73,6 +75,16 @@ public class TimeTable extends AppCompatActivity {
                         Log.v("msm" , ""+adapter.getRef(position).getKey());
                         workSchedule.putExtra("DayId", adapter.getRef(position).getKey());
                         startActivity(workSchedule);
+                    }
+
+                    @Override
+                    public void onRemove(View view, int position, boolean isLongClick) {
+
+                    }
+
+                    @Override
+                    public void onDetail(int position) {
+
                     }
                 });
             }

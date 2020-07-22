@@ -49,7 +49,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.UUID;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private FirebaseDatabase database;
@@ -123,7 +125,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         mLayoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(mLayoutManager);
 
-        loadMenu();
+        if (Common.isConnectedToInternet(this))
+            loadMenu();
+        else {
+            Toast.makeText(this, "Please check your network connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
@@ -157,6 +164,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         foodList.putExtra("CategoryId", adapter.getRef(position).getKey());
                         startActivity(foodList);
                     }
+
+                    @Override
+                    public void onRemove(View view, int position, boolean isLongClick) {
+
+                    }
+
+                    @Override
+                    public void onDetail(int position) {
+
+                    }
                 });
             }
             @NonNull
@@ -168,9 +185,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         };
         adapter.startListening();
-        adapter.notifyDataSetChanged(); // Refresh data if have data changed
         recycler_menu.setAdapter(adapter);
-
+        adapter.notifyDataSetChanged(); // Refresh data if have data changed
     }
 
     @Override

@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,13 +14,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
+import com.mohammadsharabati.restaurantgenieserver.Interface.ItemClickListener;
 import com.mohammadsharabati.restaurantgenieserver.Model.Table;
 import com.mohammadsharabati.restaurantgenieserver.ViewHolder.StaffDetailAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class StaffDetail extends AppCompatActivity {
+/**
+ * Created by Mohammad Sharabati.
+ */
+public class StaffDetail extends AppCompatActivity implements ItemClickListener {
 
     private TextView name_of_staff;
 
@@ -56,6 +61,9 @@ public class StaffDetail extends AppCompatActivity {
         }
         if (!staffId.isEmpty()) {
             name_of_staff.setText(staffName);
+            adapter = new StaffDetailAdapter(listTable, listKey);
+            adapter.setItemClickListener(this);
+            table_list.setAdapter(adapter);
             loadListTable(staffId);
         }
     }
@@ -64,17 +72,16 @@ public class StaffDetail extends AppCompatActivity {
 
         Query listTableByStaffId = AddTables.orderByChild("staffId").equalTo(staffId);
 
-        listTableByStaffId.addListenerForSingleValueEvent(new ValueEventListener() {
+        listTableByStaffId.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                listTable.clear();
+                listKey.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     listKey.add(snapshot.getKey());
                     listTable.add(snapshot.getValue(Table.class));
                 }
-
-                adapter = new StaffDetailAdapter(listTable, listKey, getBaseContext());
                 adapter.notifyDataSetChanged();
-                table_list.setAdapter(adapter);
             }
 
             @Override
@@ -82,5 +89,20 @@ public class StaffDetail extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onClick(View view, int position, boolean isLongClick) {
+
+    }
+
+    @Override
+    public void onRemove(View view, int position, boolean isLongClick) {
+        AddTables.child(listKey.get(position)).removeValue();
+    }
+
+    @Override
+    public void onDetail(int position) {
+
     }
 }

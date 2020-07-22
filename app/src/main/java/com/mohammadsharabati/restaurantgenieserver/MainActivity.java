@@ -15,7 +15,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mohammadsharabati.restaurantgenieserver.Common.Common;
 import com.mohammadsharabati.restaurantgenieserver.Model.User;
-
+/**
+ * Created by Mohammad Sharabati.
+ */
 public class MainActivity extends AppCompatActivity {
 
     Button btnSignIn, btnSignUp;
@@ -29,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         btnSignUp = (Button) findViewById(R.id.btnSignUp);
 
         Paper.init(this);
-
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(signUp);
             }
         });
-
-
     }
 
     private void login(final String BusinessNumber, final String Name, final String password) {
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         mDialog.setMessage("Please waiting...");
         mDialog.show();
 
-        users.addValueEventListener(new ValueEventListener() {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
